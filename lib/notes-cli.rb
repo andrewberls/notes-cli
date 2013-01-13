@@ -68,18 +68,16 @@ class Notes
 
     # Read and parse all files as specified in the options
     def find_all
-      Notes.files.each do |filename|
-        name = filename.gsub(Dir.pwd, '')
-        File.open(filename, "r") { |file| Notes.parse_file(name, file) }
-      end
+      Notes.files.each { |f| Notes.parse_file(f) }
     end
 
     # Scan a file for annotations and output numbered lines for each
-    def parse_file(name, file)
+    def parse_file(filename)
+      name    = filename.gsub(Dir.pwd, '')
       counter = 1
       tasks   = []
 
-      file.each_line do |line|
+      File.read(filename).each_line do |line|
         if @options[:flags].any? { |flag| line.include?(flag) || line.include?(flag.downcase) }
           tasks << {
             :line_num => counter,
