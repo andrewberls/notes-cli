@@ -1,0 +1,23 @@
+#!/usr/bin/ruby
+
+require 'notes-cli'
+
+if ARGV.any? { |arg| ["-h", "--help"].include?(arg) }
+  puts %Q{\
+Usage: notes [DIRECTORY=.] [-f FILES] [-e EXCLUDES]
+
+Options:
+  -f, --flags    # List of custom annotations, ex: '-f broken refactor' (case insensitive)
+  -e, --exclude  # List of directories to ignore, ex: '-e tmp/ log/'
+  -h, --help     # Display this menu
+
+Examples:
+  notes                 # Show default annotations for all files in current directory (default)
+  notes app/ -f broken  # Only examine files in the app/ directory and add the 'broken' flag
+
+}
+  exit(0)
+end
+
+Notes.build_options(ARGV)
+Notes.find_all
