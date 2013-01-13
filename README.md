@@ -8,7 +8,7 @@ Default annotations are: __TODO__, __FIXME__, and __OPTIMIZE__. Custom annotatio
 ### INSTALLATION:
 `gem install notes-cli`
 
-This will install the `notes` executable which will run the script and print found annotations.
+This will install the `notes` executable which will run the script and print found annotations. Notes requires [Ruby](http://www.ruby-lang.org/en/downloads/) 1.8.7+ to be installed on your system.
 
 Usage: `notes [DIRECTORY=.] [-f FLAGS] [-e EXCLUDES]`
 
