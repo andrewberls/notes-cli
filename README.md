@@ -28,7 +28,7 @@ notes -e tmp/ log/    # Ignore any files in tmp/ or log/
 
 A sample run might look like the following:
 ```
-$ notes app/ -f failing
+$ notes src/ -f failing
 
 app/models/user.rb:
   ln 2: # TODO: Condense this eventually
