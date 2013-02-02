@@ -77,20 +77,34 @@ class Notes
       counter = 1
       tasks   = []
 
-      File.read(filename).each_line do |line|
-        if @options[:flags].any? { |flag| line.include?(flag) || line.include?(flag.downcase) }
-          tasks << {
-            :line_num => counter,
-            :line     => line.strip
-          }
+      begin
+        File.read(filename).each_line do |line|
+          if @options[:flags].any? { |flag| line =~ /#{flag}/i }
+            tasks << {
+              :line_num => counter,
+              :line     => line.strip
+            }
+          end
+          counter += 1
         end
-        counter += 1
+      rescue
+        # Error occurred reading the file (ex. invalid byte sequence in UTF-8)
+        # Move on quietly
       end
 
       if !tasks.empty?
         name.slice!(0) if name.start_with?("/")
         puts "#{name}:"
-        tasks.each { |task| puts "  ln #{task[:line_num]}: #{task[:line]}" }
+
+        tasks.each do |task|
+          flag_regex = Regexp.new(@options[:flags].join('|'), true)
+          color = 33 # yellow
+          line  = task[:line].gsub(flag_regex) do |flag|
+            "\e[#{color};1m#{flag}\033[0m"
+          end
+          puts "  ln #{task[:line_num]}: #{line}"
+        end
+
         puts ""
       end
     end

@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'notes-cli'
-  s.version     = '1.0.2'
+  s.version     = '1.0.4'
   s.executables << 'notes'
   s.date        = '2013-01-13'
   s.summary     = "A tool for managing source code annotations"

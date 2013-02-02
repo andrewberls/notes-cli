@@ -4,6 +4,8 @@ require 'notes-cli'
 
 if ARGV.any? { |arg| ["-h", "--help"].include?(arg) }
   puts %Q{\
+Recursively search source files for annotations. Default annotations are TODO, OPTIMIZE, and FIXME.
+
 Usage: notes [DIRECTORY=.] [-f FILES] [-e EXCLUDES]
 
 Options:
