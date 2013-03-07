@@ -46,7 +46,7 @@ class Notes
 
       arg_list.reject(&:empty?).each do |set|
         flag, *args = set
-        args.map! { |arg| arg.delete("/") } #{ }"log/" => "log"
+        args.map! { |arg| arg.delete("/") } # "log/" => "log"
 
         case flag
         when '-f', '--flags'   then options[:flags].concat(args)
@@ -64,11 +64,6 @@ class Notes
       Dir[pattern].reject do |f|
         File.directory?(f) || @options[:exclude].any? { |dir| File.dirname(f).include?(dir) }
       end
-    end
-
-    # Read and parse all files as specified in the options
-    def find_all
-      Notes.files.each { |f| Notes.parse_file(f) }
     end
 
     # Scan a file for annotations and output numbered lines for each
@@ -109,7 +104,11 @@ class Notes
       end
     end
 
-  end
+    # Read and parse all files as specified in the options
+    def find_all
+      Notes.files.each { |f| Notes.parse_file(f) }
+    end
 
+  end
 end
 
