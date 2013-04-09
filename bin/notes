@@ -6,7 +6,7 @@ if ARGV.any? { |arg| ["-h", "--help"].include?(arg) }
   puts %Q{\
 Recursively search source files for annotations. Default annotations are TODO, OPTIMIZE, and FIXME.
 
-Usage: notes [DIRECTORY=.] [-f FILES] [-e EXCLUDES]
+Usage: notes [DIRECTORY=. | FILENAMES] [-f FLAGS] [-e EXCLUDES]
 
 Options:
   -f, --flags    # List of custom annotations, ex: '-f broken refactor' (case insensitive)
@@ -16,10 +16,11 @@ Options:
 Examples:
   notes                 # Show default annotations for all files in current directory (default)
   notes app/ -f broken  # Only examine files in the app/ directory and add the 'broken' flag
+  notes app/ -e logs/   # Show default annotations for files in app/ directory, excluding files in logs/
+  notes one.rb two.rb   # Show default annotations for one.rb and two.rb
 
 }
   exit(0)
 end
 
-Notes.build_options(ARGV)
-Notes.find_all
+Notes::CLI.new.find_all
