@@ -24,6 +24,7 @@ Usage: `notes [DIRECTORY=.] [-f FLAGS] [-e EXCLUDES]`
 notes                 # Show default annotations for all files in current directory (default)
 notes app/ -f broken  # Only examine files in the app/ directory and add the 'broken' flag
 notes -e tmp/ log/    # Ignore any files in tmp/ or log/
+notes one.rb two.rb   # Show default annotations for one.rb and two.rb
 ```
 
 A sample run might look like the following:
