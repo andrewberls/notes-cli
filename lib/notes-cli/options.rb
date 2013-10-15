@@ -1,5 +1,5 @@
 module Notes
-  module Opts
+  module Options
 
     DEFAULT_OPTIONS = {
       :flags     => %w(TODO FIXME OPTIMIZE),

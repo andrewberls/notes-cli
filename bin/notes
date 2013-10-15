@@ -2,6 +2,11 @@
 
 require 'notes-cli'
 
+if ARGV.any? { |arg| ["-v", "--version"].include?(arg) }
+  puts Notes::VERSION
+  exit
+end
+
 if ARGV.any? { |arg| ["-h", "--help"].include?(arg) }
   puts %Q{\
 Recursively search source files for annotations. Default annotations are TODO, OPTIMIZE, and FIXME.
@@ -12,6 +17,7 @@ Options:
   -f, --flags    # List of custom annotations, ex: '-f broken refactor' (case insensitive)
   -e, --exclude  # List of directories to ignore, ex: '-e tmp/ log/'
   -h, --help     # Display this menu
+  -v, --version  # Display the currently installed version
 
 Examples:
   notes                 # Show default annotations for all files in current directory (default)

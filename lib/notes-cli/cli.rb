@@ -1,50 +1,30 @@
-
 module Notes
   class CLI
-    attr_accessor :options
-
     def initialize
-      @options = Opts.parse(ARGV)
+      # Hash with keys :locations, :flags, :exclude
+      @options = Notes::Options.parse(ARGV)
     end
 
-    # Print a formatted task, with highlighting
-    def print_task(task)
-      flag_regex = Regexp.new(@options[:flags].join('|'), true)
-      color = 33 # yellow
-      line  = task[:line].gsub(flag_regex) do |flag|
-        "\e[#{color};1m#{flag}\033[0m"
-      end
-
-      puts "  ln #{task[:line_num]}: #{line}"
-    end
 
     # Scan a file for annotations and output numbered lines for each
     def parse_file(filename)
-      name    = filename.gsub(Dir.pwd, '')
-      counter = 1
-      tasks   = []
-
-      begin
-        File.read(filename).each_line do |line|
-          if @options[:flags].any? { |flag| line =~ /#{flag}/i }
-            tasks << {
-              :line_num => counter,
-              :line     => line.strip
-            }
-          end
-          counter += 1
-        end
-      rescue
-        # Error occurred reading the file (ex. invalid byte sequence in UTF-8)
-        # Move on quietly
-      end
+      tasks      = Notes::Tasks.for_file(File.expand_path(filename), @options)
+      flag_regex = Regexp.new(@options[:flags].join('|'), true)
+      name       = filename.gsub(Dir.pwd, '')
 
       if !tasks.empty?
-        name.slice!(0) if name.start_with?("/")
-        puts "#{name}:"
-        tasks.each { |t| print_task(t) }
+        name.slice!(0) if name.start_with?("/") # TODO - ?
+        puts name + ':'
+        tasks.each { |task| puts task.format(flag_regex) }
         puts ""
       end
+    end
+
+    # Determine if a file handle should be rejected based on type and
+    # directories specified in options[:exclude]
+    def reject?(f)
+      is_excluded_dir = @options[:exclude].any? { |dir| File.dirname(f).include?(dir) }
+      File.directory?(f) || is_excluded_dir
     end
 
     # Read and parse all files as specified in the options
@@ -52,7 +32,7 @@ module Notes
       @options[:locations].each do |loc|
         if File.directory?(loc)
           Dir[ File.join(loc, "**/*") ].reject do |f|
-            File.directory?(f) || @options[:exclude].any? { |dir| File.dirname(f).include?(dir) }
+            reject?(f)
           end.each { |f| parse_file(f) }
         else
           parse_file(loc)
