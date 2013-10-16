@@ -8,9 +8,10 @@ module Notes
 
     # Scan a file for annotations and output numbered lines for each
     def parse_file(filename)
-      tasks      = Notes::Tasks.for_file(File.expand_path(filename), @options)
-      flag_regex = Regexp.new(@options[:flags].join('|'), true)
-      name       = filename.gsub(Dir.pwd, '')
+      flags      = @options[:flags]
+      tasks      = Notes::Tasks.for_file(File.expand_path(filename), flags)
+      flag_regex = Regexp.new(flags.join('|'), true)
+      name       = filename.gsub(Dir.pwd, '') # Relative file path
 
       if !tasks.empty?
         name.slice!(0) if name.start_with?("/") # TODO - ?

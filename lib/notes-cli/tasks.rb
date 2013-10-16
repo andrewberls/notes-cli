@@ -25,13 +25,12 @@ module Notes
 
   module Tasks
     # Parse a file and construct Task objects for each line matching
-    # a pattern specified in options[:flags]
+    # one of the patterns specified in `flags`
     #
     # Returns Array<Notes::Task>
-    def self.for_file(filename, options)
+    def self.for_file(filename, flags)
       counter = 1
       tasks   = []
-      flags   = options[:flags]
 
       begin
         File.read(filename).each_line do |line|
