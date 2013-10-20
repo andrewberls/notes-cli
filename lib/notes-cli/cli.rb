@@ -21,25 +21,47 @@ module Notes
       end
     end
 
-    # Determine if a file handle should be rejected based on type and
-    # directories specified in options[:exclude]
-    def reject?(f)
-      is_excluded_dir = @options[:exclude].any? { |dir| File.dirname(f).include?(dir) }
-      File.directory?(f) || is_excluded_dir
+
+
+
+
+    # files = Notes.valid_files(options)
+    # flags = options[:flags]
+    # Notes::Tasks.for_files(files, flags)
+    #
+    # =>
+    #  {
+    #    'app/assets/javascripts/test.js' => [<Notes::Task>, <Notes::Task>, ...]
+    #    'app/assets/javascripts/something.js' => [<Notes::Task>, <Notes::Task>, ...]
+    #  }
+
+
+    def self.test
     end
+
 
     # Read and parse all files as specified in the options
     def find_all
-      @options[:locations].each do |loc|
-        if File.directory?(loc)
-          Dir[ File.join(loc, "**/*") ].reject do |f|
-            reject?(f)
-          end.each { |f| parse_file(f) }
-        else
-          parse_file(loc)
-        end
-      end
+    #   @options[:locations].each do |loc|
+    #     if File.directory?(loc)
+    #       Dir[ File.join(loc, "**/*") ].reject do |f|
+    #         reject?(f)
+    #       end.each { |f| parse_file(f) }
+    #     else
+    #       parse_file(loc)
+    #     end
+    #   end
+
+
+      files = Notes.valid_files(@options)
+      flags = @options[:flags]
+      raise Notes::Tasks.for_files(files, flags).inspect
     end
+
+
+
+
+
 
   end
 end
