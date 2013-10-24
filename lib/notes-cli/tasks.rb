@@ -77,8 +77,9 @@ module Notes
         tasks = Notes::Tasks.for_file(filename, flags)
         result[filename] = tasks
       end
-      result
-    end
 
+      # Delete file listings with no tasks
+      result.delete_if { |k, v| v.empty? }
+    end
   end
 end

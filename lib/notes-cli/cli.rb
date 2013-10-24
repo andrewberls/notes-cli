@@ -5,13 +5,13 @@ module Notes
       @options = Notes::Options.parse(ARGV)
     end
 
-
     # Scan a file for annotations and output numbered lines for each
+    # TODO: this could use refactoring
     def parse_file(filename)
       flags      = @options[:flags]
-      tasks      = Notes::Tasks.for_file(File.expand_path(filename), flags)
       flag_regex = Regexp.new(flags.join('|'), true)
       name       = filename.gsub(Dir.pwd, '') # Relative file path
+      tasks      = Notes::Tasks.for_file(File.expand_path(filename), flags)
 
       if !tasks.empty?
         name.slice!(0) if name.start_with?("/") # TODO - ?
@@ -21,48 +21,21 @@ module Notes
       end
     end
 
-
-
-
-
-    # files = Notes.valid_files(options)
-    # flags = options[:flags]
-    # Notes::Tasks.for_files(files, flags)
-    #
-    # =>
-    #  {
-    #    'app/assets/javascripts/test.js' => [<Notes::Task>, <Notes::Task>, ...]
-    #    'app/assets/javascripts/something.js' => [<Notes::Task>, <Notes::Task>, ...]
-    #  }
-
-
-    def self.test
-    end
-
-
     # Read and parse all files as specified in the options
+    # Only outputs to console; returns nothing
     def find_all
-    #   @options[:locations].each do |loc|
-    #     if File.directory?(loc)
-    #       Dir[ File.join(loc, "**/*") ].reject do |f|
-    #         reject?(f)
-    #       end.each { |f| parse_file(f) }
-    #     else
-    #       parse_file(loc)
-    #     end
-    #   end
-
-
       files = Notes.valid_files(@options)
       flags = @options[:flags]
-      raise Notes::Tasks.for_files(files, flags).inspect
+      flag_regex = Regexp.new(flags.join('|'), true)
+
+      Notes::Tasks.for_files(files, flags).each do |filename, tasks|
+        name = filename.gsub(Dir.pwd, '') # Print only relative paths
+        name.slice!(0) if name.start_with?('/')
+        puts name + ':'
+        tasks.each { |task| puts task.format(flag_regex) }
+        puts ''
+      end
     end
-
-
-
-
-
-
   end
 end
 

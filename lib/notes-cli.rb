@@ -31,8 +31,12 @@ module Notes
       excluded  = options[:exclude]
 
       locations.flat_map do |loc|
-        Dir[ File.join(loc, "**/*") ].reject do |f|
-          is_directory_or_excluded?(excluded, f)
+        if File.directory?(loc)
+          Dir[ File.join(loc, "**/*") ].reject do |f|
+            is_directory_or_excluded?(excluded, f)
+          end
+        else
+          loc
         end
       end
     end
