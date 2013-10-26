@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
 
   s.executables << 'notes'
-  s.files       = Dir['lib/**/*']
+  s.files       = `git ls-files`.split($/)
   s.version     = Notes::VERSION
 
   s.add_development_dependency "rspec-core"

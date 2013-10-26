@@ -1,0 +1,10 @@
+<% @tasks.each do |filename, tasks| %>
+  <div>
+    <h3><%= filename %></h3>
+    <ul>
+      <% tasks.each do |task| %>
+        <li><%= task.line %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
