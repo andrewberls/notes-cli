@@ -1,11 +1,10 @@
-require 'notes-cli/version'
-require 'notes-cli/options'
-require 'notes-cli/tasks'
-require 'notes-cli/cli'
-
-
 module Notes
   class << self
+
+    # Are we being included into a Rails project?
+    def rails?
+      !!defined?(Rails)
+    end
 
     # Determine if a file handle should be rejected based on type and
     # directories specified in options[:exclude]
@@ -43,3 +42,8 @@ module Notes
 
   end
 end
+
+require 'notes-cli/version'
+require 'notes-cli/options'
+require 'notes-cli/tasks'
+require 'notes-cli/cli'

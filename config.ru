@@ -1,4 +1,4 @@
-require 'notes-cli'
+require File.expand_path('../lib/notes-cli', __FILE__)
+require File.expand_path('../lib/notes-cli/web', __FILE__)
 
-require 'notes-cli/web'
 run Notes::Web
