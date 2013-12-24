@@ -1,31 +1,61 @@
-<div class="row">
+<div class="header-container">
 
-  <div class="span-4">
-    <div class="sidebar-container">
-      hello
-    </div>
+  <div class="search-container">
+    <%#<div class="icon-container">x</div>%>
+    <input type="text" placeholder="Search..." />
   </div>
 
-  <div class="span-12">
-    <div class="content-container">
+</div><!-- .header-container -->
 
-      <%# TODO: filename might be separate from the filename contained in each task. How to unify? %>
-      <% @tasks.each do |filename, tasks| %>
-        <div class="task">
-          <h3 class="task-filename"><%= filename %></h3>
 
-          <div class="task-lines-container">
-            <% tasks.each do |task| %>
-              <div class="task-line-container">
-                <div class="task-line-num"><%= task.line_num.to_s.rjust(2, '&nbsp;') %></div>
-                <div class="task-line"><%= task.line %></div>
-              </div>
-            <% end %>
-          </div>
-        </div><!-- .task -->
-      <% end %>
 
+<div class="sidebar-container">
+  <section>
+    <h1>Notes::Web</h1>
+  </section>
+
+  <section>
+    <h3>Tags</h3>
+
+    <div class="tag-container">
+      <div class="checkbox checked"></div> <span>TODO</span>
     </div>
+
+    <div class="tag-container">
+      <div class="checkbox"></div> <span>FIXME</span>
+    </div>
+
+    <div class="tag-container">
+      <div class="checkbox checked"></div> <span>OPTIMIZE</span>
+    </div>
+  </section>
+</div><!-- .sidebar-container -->
+
+
+
+<div class="main-content-container">
+  <div class="stats-container">
+    stats here
   </div>
 
-</div>
+
+  <div class="content-container">
+
+    <%# TODO: filename might be separate from the filename contained in each task. How to unify? %>
+    <% @tasks.each do |filename, tasks| %>
+      <div class="task">
+        <h2 class="task-filename"><%= filename %></h2>
+
+        <div class="task-lines-container">
+          <% tasks.each do |task| %>
+            <div class="task-line-container">
+              <div class="task-line-num"><%= task.line_num.to_s.rjust(2, ' ') %></div>
+              <div class="task-line"><%= task.line %></div>
+            </div>
+          <% end %>
+        </div>
+      </div><!-- .task -->
+    <% end %>
+
+  </div><!-- .content-container -->
+</div><!-- .main-content-container -->

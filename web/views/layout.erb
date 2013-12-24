@@ -3,25 +3,14 @@
 <head>
   <title>Notes::Web</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <link href="<%= @root %>/stylesheets/cheeky.min.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href='http://fonts.googleapis.com/css?family=Lato:300,400,900' rel='stylesheet' type='text/css'>
+  <link href="<%= @root %>/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="<%= @root %>/stylesheets/application.css" media="screen" rel="stylesheet" type="text/css" />
   <script src="<%= @root %>/javascripts/application.js"></script>
 </head>
 <body>
 
-  <header>
-    <div class="container">
-      <div class="row">
-        <div class="span-16">
-          <h1>Notes::Web</h1>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <div class="container">
-    <%= yield %>
-  </div>
+  <%= yield %>
 
 </body>
 </html>
