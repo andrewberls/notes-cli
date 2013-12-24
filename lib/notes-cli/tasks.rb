@@ -1,4 +1,5 @@
 module Notes
+
   COLORS = {
     'yellow' => 33
   }
@@ -109,4 +110,5 @@ module Notes
       return for_files(files, options[:flags])
     end
   end
+
 end

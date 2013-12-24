@@ -1,5 +1,6 @@
 module Notes
   class CLI
+
     def initialize
       # Hash with keys :locations, :flags, :exclude
       @options = Notes::Options.parse(ARGV)
@@ -36,6 +37,7 @@ module Notes
         puts ''
       end
     end
+
   end
 end
 
