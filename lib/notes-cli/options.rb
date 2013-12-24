@@ -1,5 +1,8 @@
+# Internal options parser
+
 module Notes
   module Options
+    extend self
 
     DEFAULT_OPTIONS = {
       :flags     => %w(TODO FIXME OPTIMIZE),
@@ -12,17 +15,33 @@ module Notes
     EXCLUDE_FLAGS = ['-e', '--exclude']
     ALL_FLAGS     = FLAG_FLAGS + EXCLUDE_FLAGS
 
+    def default_excludes
+      if Notes.rails?
+        %w(tmp log)
+      else
+        []
+      end
+    end
+
+    def default_root
+      if Notes.rails?
+        Rails.root
+      else
+        Dir.pwd
+      end
+    end
+
     # Parse ARGV into a directory and list of argument groups
     # For example, given ['app/', -f', 'refactor', 'broken', '--exclude', 'tmp', 'log']:
     # => [ ['app/'], ['-f', 'refactor', 'broken'], ['--exclude', 'tmp', 'log'] ]
     #
-    def self.arg_groups(args)
+    def arg_groups(args)
       result = []
       buf    = []
 
-      # No dir was passed, use current dir
+      # No dir was passed, use default
       if args.empty? || args.first.start_with?('-')
-        result << [ Dir.pwd ]
+        result << [ default_root ]
       end
 
       args.each do |arg|
@@ -36,11 +55,12 @@ module Notes
       result << buf
     end
 
-    # Append any command line arguments to a default set of arguments
-    def self.parse(args)
+    # Append received command line arguments to a default set of arguments
+    # Returns Hash
+    def parse(args)
       arg_list = arg_groups(args)
       options  = DEFAULT_OPTIONS
-
+      options[:exclude].concat(default_excludes)
       options[:locations] = arg_list.shift
 
       arg_list.reject(&:empty?).each do |set|
@@ -55,6 +75,11 @@ module Notes
       end
 
       options
+    end
+
+    # Return the default set of flags and locations
+    def defaults
+      parse({})
     end
 
   end

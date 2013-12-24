@@ -56,6 +56,7 @@ describe "opt parsing" do
 
     it "accepts a directory" do
       opts = Notes::Options.parse(['app/'])
+      opts[:locations].should == ['app/']
     end
 
     it "looks in the current directory if none provided" do
@@ -100,6 +101,31 @@ describe "opt parsing" do
       opts = Notes::Options.parse(['src/', '-f', 'broken', 'findme', '-e', 'log/', 'tmp/'])
       opts[:flags].should include('broken', 'findme')
       opts[:exclude].should include('log', 'tmp')
+    end
+  end
+end
+
+describe 'defaults' do
+  context 'when Rails is not defined' do
+    it 'does not exclude anything by default' do
+      Notes::Options.default_excludes.should == []
+    end
+
+    it 'uses the current directory by default' do
+      Notes::Options.default_root.should == Dir.pwd
+    end
+  end
+
+  context 'when Rails is defined' do
+    it 'excludes slow directories by default' do
+      module Rails; end
+      Notes::Options.default_excludes.should == %w(tmp log)
+    end
+
+    it 'uses the Rails root by default' do
+      module Rails; end
+      Rails.should_receive(:root).and_return 'root'
+      Notes::Options.default_root.should == 'root'
     end
   end
 end
