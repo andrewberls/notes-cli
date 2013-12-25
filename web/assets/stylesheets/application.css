@@ -7,12 +7,25 @@ body {
 
 
 
-.header-container {
+
+
+
+.header-container,
+.main-content-container {
   box-sizing: border-box;
+  margin-left: 250px;
+}
+
+
+
+
+
+
+
+.header-container {
   background-color: white;
   border-bottom: 1px solid #ccc;
   overflow: auto;
-  margin-left: 250px;
   padding: 10px 15px;
 }
 
@@ -33,26 +46,35 @@ body {
     border-top: 1px solid #49586f;    /* lighter */
     border-bottom: 1px solid #2a3341; /* darker */
   }
-    .sidebar-container section:first-child { border-top: none; }
-    .sidebar-container section:last-child  { border-bottom: none; }
+    .sidebar-container section:first-child { border-top: 0; }
+    .sidebar-container section:last-child  { border-bottom: 0; }
   .sidebar-container h1 {
     font-family: Lato, 'Helvetica Neue', Arial, sans-serif;
     color: #eee;
     font-size: 2em;
   }
   .sidebar-container h3 {
-    color: #66748C; /* TODO: this blends in too much */
+    color: #7a889e;
     font-size: 1.4em;
     font-weight: bold;
     margin-bottom: 20px;
   }
   .tag-container {
-    overflow: auto;
     margin-bottom: 15px;
+    overflow: auto;
+    position: relative;
   }
+    .tag-container:hover { cursor: pointer; }
+    .tag-container .delete-tag-btn {
+      color: #f9f9f9; /* TODO */
+      display: none;
+      float: right;
+      margin-top: 1px;
+      text-decoration: none;
+    }
+      .tag-container:hover .delete-tag-btn { display: inline-block; }
+      .tag-container .delete-tag-btn:hover { color: #ccc; }
     .tag-container .checkbox {
-      background-color: red; /*TODO*/
-
       border-radius: 3px;
       float: left;
       font-size: 1.1em;
@@ -64,12 +86,11 @@ body {
       height: 20px;
     }
       .tag-container .checkbox.checked:before {
-        content: '\2713';
+        content: '\2713'; /* Unicode checkmark */
         color: white;
       }
     .tag-container span {
       color: #9BA6B9;
-      /*display: inline-block;*/
       float: left;
       font-size: 1.1em;
       font-weight: bold;
@@ -80,97 +101,167 @@ body {
 
 
 .main-content-container {
-  margin-left: 250px;
-  float: left;
   padding: 20px;
+}
+
+
+.tasks-container {}
+
+.empty-tasks-container {
+  margin-top: 30px;
+  text-align: center;
+}
+  .empty-tasks-container h2 {
+    color: #757575;
+    font-size: 2em;
+  }
+
+
+.task-filename {
+  font-size: 2em;
+  margin-bottom: 20px;
 }
 
 .task {
   background-color: white;
-  border-radius: 2px;
-  margin-bottom: 10px;
-  padding: 5px;
-  border: 1px solid #ccc;
+  margin-bottom: 20px;
 }
-  .task-filename {
-    font-size: 1.2em;
-    font-weight: bold;
+  .task-header {
+    background-color: #354051;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    color: white;
+    overflow: auto;
   }
-  .task-lines-container {
-    border: 1px solid #ccc;
-  }
-    .task-line-container {
-      /*TODO: clearfix*/
-      background-color: #f5f5f5;
-      border-bottom: 1px solid #ccc;
-      font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
-      font-size: 0.9em;
-      overflow: auto;
+    .task-type, .task-info {
+      box-sizing: border-box;
+      padding: 15px 10px;
     }
-      .task-line-container:nth-of-type(even) { background-color: #ebf8ff; }
+    .task-type {
+      /* TODO: dynamic background-color */
+      background-color: #19A98A;
 
-      .task-line-container:last-child { border-bottom: 0; }
+      color: white;
+      float: left;
+      font-size: 1.4em;
+      font-weight: bold;
+      text-align: center;
+      width: 10%;
+      /*width: 20%;*/
 
-      .task-line-num {
-        border-right: 1px solid #ccc;
-        float: left;
-        margin-right: 10px;
-        padding: 5px 10px;
-      }
+      /* TODO: probably going to want to bound this at 10%
+       * and create a separate item for each flag in the line?
+       *
+       * or maybe just bound at 10% and keep existing solution
+       * because multiple matches is unlikely?
+       */
+    }
+    .task-info {
+      float: left;
+      padding: 15px;
+      width: 90%;
+      /*width: 80%;*/
+    }
+    .task-author {
+      font-size: 1.2em;
+    }
+    .task-date {
+      display: inline-block;
+      font-size: 1.1em;
+      margin-top: 2px;
+      float: right;
+    }
+  .task-body {
+    border: 1px solid #ccc;
+    border-top: 0;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    overflow: auto;
+    padding: 10px;
+    padding-right: 0;
+}
+    .task-lines, .task-toggle-container {
+      box-sizing: border-box;
+      float: left;
+    }
+    .task-lines {
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+      display: block;
+      font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+      width: 95%;
+    }
       .task-line {
-        float: left;
-        padding: 5px;
-        /*TODO: overflow*/
-        /*overflow-x: scroll;*/
+        border-bottom: 1px dashed #dedede;
+        padding: 4px;
       }
+        .task-line:first-child { border-bottom: 0; }
+        .task-line:last-child { border-bottom: 0; }
+      .task-context {
+        border-top: 1px dashed #dedede;
+        display: none;
+      }
+    .task-toggle-container {
+      text-align: center;
+      width: 5%;
+    }
+      .task-toggle-container i {
+        font-size: 2em;
+        margin-top: -2px;
+      }
+        .task-toggle-container i:hover { cursor: pointer; }
 
 
 
 
-
-
-
-/*
- yellow: FED432
- light blue: 35B0FC
- fuschia: E62163
- jade: 19A98A
-*/
 
 
 
 
 
 .search-container {
-  background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 20px;
   box-sizing: border-box;
+  float: right;
   overflow: auto;
   padding: 5px 10px 4px;
-  float: right;
   width: 200px;
 }
-  .search-container .icon-container {
-    overflow: auto;
-    float: left;
-    margin-right: 1%;
-    width: 5%;
-  }
-    .search-container .icon-container img {
-      display: inline-block;
-      margin-top: 2px;
-    }
   .search-container input {
     border: 0;
-    float: left;
-    margin-top: 1px;
-    width: 89%;
   }
-    .search-container input:focus { outline: none; }
+    .search-container input:focus { outline: 0; }
+
+
+
 
 
 .stats-container {
   outline: 1px solid red;
   margin-bottom: 20px;
 }
+
+.chart {
+  max-width: 200px;
+}
+
+
+
+
+
+
+
+
+
+
+.color-purple     { background-color: #A620D6; } /* purple */
+.color-orange     { background-color: #F2A20C; } /* orange */
+.color-lightblue  { background-color: #35B0FC; } /* light blue */
+.color-fuschia    { background-color: #E62163; } /* fuschia */
+.color-lightgreen { background-color: #19A98A; } /* lightgreen */
+.color-green      { background-color: #178F35; } /* green */
+.color-blue       { background-color: #0081c2; } /* blue */
+.color-pink       { background-color: #E890D3; } /* pink */
+.color-turquoise  { background-color: #17BDB4; } /* turqoise */
+.color-deepred    { background-color: #BD1720; } /* deep red */

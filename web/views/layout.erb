@@ -4,13 +4,46 @@
   <title>Notes::Web</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link href='http://fonts.googleapis.com/css?family=Lato:300,400,900' rel='stylesheet' type='text/css'>
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
   <link href="<%= @root %>/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="<%= @root %>/stylesheets/application.css" media="screen" rel="stylesheet" type="text/css" />
-  <script src="<%= @root %>/javascripts/application.js"></script>
+
 </head>
 <body>
 
   <%= yield %>
 
+  <script id="tmpl-task" type="text/template">
+    <div class="task">
+      <div class="task-header">
+        <div class="task-type">{{= task.flags[0] }}</div>
+        <div class="task-info">
+          <span class="task-author">{{= task.author}} TODO SHA</span>
+          <span class="task-date">{{= task.date }}</span>
+        </div>
+      </div>
+
+      <div class="task-body">
+        <code class="task-lines">
+          <pre class="task-line">{{= task.line }}</pre>
+          <div class="task-context">
+            {{ var context_lines = task.context.split("\n") }}
+            {{ for(var i=0; i<context_lines.length; i++) { }}
+              <pre class="task-line">{{= context_lines[i] }}</pre>
+            {{ } }}
+          </div>
+        </code>
+
+        <div class="task-toggle-container">
+          <i class="fa fa-angle-down"></i>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script src="<%= @root %>/javascripts/d3.min.js"></script>
+  <script src="<%= @root %>/javascripts/jquery-1.10.2.min.js"></script>
+  <script src="<%= @root %>/javascripts/underscore.min.js"></script>
+  <script src="<%= @root %>/javascripts/application.js"></script>
 </body>
 </html>

@@ -1,8 +1,7 @@
 <div class="header-container">
 
   <div class="search-container">
-    <%#<div class="icon-container">x</div>%>
-    <input type="text" placeholder="Search..." />
+    <input id="search" type="text" placeholder="Search..." />
   </div>
 
 </div><!-- .header-container -->
@@ -18,44 +17,58 @@
     <h3>Tags</h3>
 
     <div class="tag-container">
-      <div class="checkbox checked"></div> <span>TODO</span>
+      <div class="checkbox checked color-purple"></div> <span>TODO</span>
+      <a href="#" class="delete-tag-btn">&times;</a>
     </div>
 
     <div class="tag-container">
-      <div class="checkbox"></div> <span>FIXME</span>
+      <div class="checkbox checked color-lightblue"></div> <span>FIXME</span>
+      <a href="#" class="delete-tag-btn">&times;</a>
     </div>
 
     <div class="tag-container">
-      <div class="checkbox checked"></div> <span>OPTIMIZE</span>
+      <div class="checkbox checked color-fuschia"></div> <span>OPTIMIZE</span>
+      <a href="#" class="delete-tag-btn">&times;</a>
     </div>
+
+    <div class="tag-container">
+      <div class="checkbox checked color-lightgreen"></div> <span>FINDME</span>
+      <a href="#" class="delete-tag-btn">&times;</a>
+    </div>
+
+    <div class="tag-container"><div class="checkbox checked color-orange"></div> <span>BLANK</span></div>
+    <div class="tag-container"><div class="checkbox checked color-green"></div> <span>BLANK</span></div>
+    <div class="tag-container"><div class="checkbox checked color-blue"></div> <span>BLANK</span></div>
+    <div class="tag-container"><div class="checkbox checked color-pink"></div> <span>BLANK</span></div>
+    <div class="tag-container"><div class="checkbox checked color-turquoise"></div> <span>BLANK</span></div>
+    <div class="tag-container"><div class="checkbox checked color-deepred"></div> <span>BLANK</span></div>
+
   </section>
 </div><!-- .sidebar-container -->
 
 
 
 <div class="main-content-container">
-  <div class="stats-container">
-    stats here
-  </div>
+
+  <% if !@tasks.empty? %>
+    <div class="stats-container">
+      <div class="chart"></div>
+    </div>
+<% end %>
 
 
   <div class="content-container">
+    <% if @tasks.empty? %>
 
-    <%# TODO: filename might be separate from the filename contained in each task. How to unify? %>
-    <% @tasks.each do |filename, tasks| %>
-      <div class="task">
-        <h2 class="task-filename"><%= filename %></h2>
+      <div class="empty-tasks-container">
+        <h2>No tasks found! Good job!</h2>
+      </div>
 
-        <div class="task-lines-container">
-          <% tasks.each do |task| %>
-            <div class="task-line-container">
-              <div class="task-line-num"><%= task.line_num.to_s.rjust(2, ' ') %></div>
-              <div class="task-line"><%= task.line %></div>
-            </div>
-          <% end %>
-        </div>
-      </div><!-- .task -->
+    <% else %>
+
+      <div class="tasks-container"></div>
+
     <% end %>
-
   </div><!-- .content-container -->
+
 </div><!-- .main-content-container -->

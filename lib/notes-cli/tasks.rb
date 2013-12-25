@@ -26,7 +26,7 @@ module Notes
         Notes.colorize('yellow', flag)
       end
 
-      "  ln #{@line_num}: #{line}"
+      "  ln #{@line_num}: #{line.strip}"
     end
 
     def to_json
@@ -78,7 +78,7 @@ module Notes
             task_options = {
               filename: filename,
               line_num: counter,
-              line: line.strip,
+              line: line,
               flags: matched_flags,
               context: context_lines(lines, idx)
             }
