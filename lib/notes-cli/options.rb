@@ -59,8 +59,8 @@ module Notes
     # Returns Hash
     def parse(args)
       arg_list = arg_groups(args)
-      options  = DEFAULT_OPTIONS
-      options[:exclude].concat(default_excludes)
+      options  = DEFAULT_OPTIONS.dup
+      options[:exclude] += default_excludes
       options[:locations] = arg_list.shift
 
       arg_list.reject(&:empty?).each do |set|
@@ -68,8 +68,8 @@ module Notes
         args.map! { |arg| arg.delete("/") } # "log/" => "log"
 
         case flag
-        when '-f', '--flags'   then options[:flags].concat(args)
-        when '-e', '--exclude' then options[:exclude].concat(args)
+        when '-f', '--flags'   then options[:flags] += args
+        when '-e', '--exclude' then options[:exclude] += args
         else puts "Unknown argument: #{flag}"
         end
       end

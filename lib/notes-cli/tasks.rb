@@ -20,8 +20,8 @@ module Notes
       @filename = options[:filename]
       @line_num = options[:line_num]
       @line     = options[:line]
-      @xflags    = options[:flags]
-      #@context  = options[:context]
+      @flags    = options[:flags]
+      @context  = options[:context]
     end
 
     # Return a String in a format suitable for printing
@@ -44,6 +44,17 @@ module Notes
   module Tasks
     extend self
 
+    # Return array of flags matched in a line
+    #
+    # line - A String to match against
+    # flags - An Array of String flags to search for
+    #
+    # Returns Array of string flags found
+    def matching_flags(line, flags)
+      words = line.split(/\W/).map(&:upcase)
+      words & flags.map(&:upcase)
+    end
+
     # Parse a file and construct Task objects for each line matching
     # one of the patterns specified in `flags`
     #
@@ -56,16 +67,20 @@ module Notes
       tasks   = []
 
       begin
-        File.read(filename).each_line do |line|
-          # TODO: need better deconstructing of all flags found in line
-          matched_flags = line.split(/\W/) & flags
+        # TODO: this may be large, punt until later.
+        lines = File.readlines(filename).map(&:chomp)
 
-          if flags.any? { |flag| line =~ /#{flag}/i }
+        lines.each_with_index do |line, idx|
+          matched_flags = matching_flags(line, flags)
+
+          #if flags.any? { |flag| line =~ /#{flag}/i }
+          if matched_flags.any?
             tasks << Notes::Task.new(
               filename: filename,
               line_num: counter,
               line: line.strip,
-              flags: matched_flags
+              flags: matched_flags,
+              context: context_lines(lines, idx)
             )
           end
           counter += 1
@@ -109,6 +124,20 @@ module Notes
       files   = Notes.valid_files(options)
       return for_files(files, options[:flags])
     end
+
+
+    private
+
+    # Return up to 5 lines following the line at idx
+    def context_lines(lines, idx)
+      ctx = []
+      1.upto(5) do |i|
+        break unless lines[idx+i]
+        ctx << lines[idx+i]
+      end
+      ctx.join("\n")
+    end
+
   end
 
 end
