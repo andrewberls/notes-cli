@@ -114,7 +114,7 @@ describe 'defaults' do
     end
 
     it 'uses the current directory by default' do
-      Notes::Options.default_root.should == Dir.pwd
+      Notes.root.should == Dir.pwd
     end
   end
 
@@ -130,7 +130,7 @@ describe 'defaults' do
 
     it 'uses the Rails root by default' do
       Rails.should_receive(:root).and_return 'root'
-      Notes::Options.default_root.should == 'root'
+      Notes.root.should == 'root'
     end
   end
 end

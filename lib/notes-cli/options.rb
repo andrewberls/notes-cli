@@ -23,13 +23,6 @@ module Notes
       end
     end
 
-    def default_root
-      if Notes.rails?
-        Rails.root
-      else
-        Dir.pwd
-      end
-    end
 
     # Parse ARGV into a directory and list of argument groups
     # For example, given ['app/', -f', 'refactor', 'broken', '--exclude', 'tmp', 'log']:
@@ -41,7 +34,7 @@ module Notes
 
       # No dir was passed, use default
       if args.empty? || args.first.start_with?('-')
-        result << [ default_root ]
+        result << [ Notes.root ]
       end
 
       args.each do |arg|

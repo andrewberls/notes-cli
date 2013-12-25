@@ -1,6 +1,11 @@
 module Notes
   extend self
 
+  # The root directory in which we're searching
+  def root
+    rails? ? Rails.root : Dir.pwd
+  end
+
   # Are we being included into a Rails project?
   def rails?
     !!defined?(Rails)
