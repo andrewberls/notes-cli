@@ -11,6 +11,43 @@ module Notes
     !!defined?(Rails)
   end
 
+  # Are we in a git repo?
+  def git?
+    Dir.chdir(root) do
+      `git status`
+      return $?.success?
+    end
+  end
+
+  # Parse raw output from git-blame(1)
+  # (results not interpreted in any way)
+  #
+  # Returns Hash
+  def blame(filename, line_num)
+    fields = {}
+
+    begin
+      Dir.chdir(root) do
+        blame = `git blame -L#{line_num},#{line_num} --line-porcelain -- #{filename} 2>/dev/null`.split("\n")
+        blame.each do |line|
+          fieldname, *values = line.split(' ')
+          fields[fieldname]  = values.join(' ')
+        end
+      end
+    rescue
+    end
+
+    fields
+  end
+
+  COLORS = {
+    'yellow' => 33
+  }
+
+  def colorize(color, str)
+    "\e[#{COLORS[color]};1m#{str}\033[0m"
+  end
+
   # Determine if a file handle should be rejected based on type and
   # directories specified in options[:exclude]
   #

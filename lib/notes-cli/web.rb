@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'json'
 
 module Notes
   class Web < Sinatra::Base
@@ -15,6 +16,12 @@ module Notes
 
       @tasks = Notes::Tasks.defaults
       erb :index
+    end
+
+    get '/tasks.json' do
+      tasks = Notes::Tasks.defaults
+      tasks.each { |filename, ts| tasks[filename] = ts.map(&:to_json) }
+      tasks.to_json
     end
 
   end

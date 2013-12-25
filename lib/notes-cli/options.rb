@@ -23,7 +23,6 @@ module Notes
       end
     end
 
-
     # Parse ARGV into a directory and list of argument groups
     # For example, given ['app/', -f', 'refactor', 'broken', '--exclude', 'tmp', 'log']:
     # => [ ['app/'], ['-f', 'refactor', 'broken'], ['--exclude', 'tmp', 'log'] ]

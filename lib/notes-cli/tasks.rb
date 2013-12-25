@@ -1,22 +1,12 @@
 module Notes
 
-  COLORS = {
-    'yellow' => 33
-  }
-
-  def self.colorize(color, str)
-    "\e[#{COLORS[color]};1m#{str}\033[0m"
-  end
-
   class Task
     attr_accessor :author, :date, :filename, :line_num,
                   :line, :flags, :context
 
-    # TODO: git integration
-    # git blame -L6,6 --line-porcelain lib/notes-cli/tasks.rb
     def initialize(options={})
-      #@author   = options[:author]
-      #@date     = options[:date]
+      @author   = options[:author]
+      @date     = options[:date]
       @filename = options[:filename]
       @line_num = options[:line_num]
       @line     = options[:line]
@@ -37,6 +27,18 @@ module Notes
       end
 
       "  ln #{@line_num}: #{line}"
+    end
+
+    def to_json
+      {
+       filename: @filename,
+       line_num: @line_num,
+       line:     @line,
+       flags:    @flags,
+       context:  @context,
+       author:   @author,
+       date:    @date
+      }
     end
   end
 
@@ -67,21 +69,25 @@ module Notes
       tasks   = []
 
       begin
-        # TODO: this may be large, punt until later.
         lines = File.readlines(filename).map(&:chomp)
 
         lines.each_with_index do |line, idx|
           matched_flags = matching_flags(line, flags)
 
-          #if flags.any? { |flag| line =~ /#{flag}/i }
           if matched_flags.any?
-            tasks << Notes::Task.new(
+            task_options = {
               filename: filename,
               line_num: counter,
               line: line.strip,
               flags: matched_flags,
               context: context_lines(lines, idx)
-            )
+            }
+
+            # See what we can get from git
+            info = line_info(filename, idx)
+            task_options[:author] = info[:author] if info[:author]
+            task_options[:date]   = info[:date] if info[:date]
+            tasks << Notes::Task.new(task_options)
           end
           counter += 1
         end
@@ -117,14 +123,10 @@ module Notes
     # Return list of tasks using default file locations and flags
     # Returns a hash of filename -> Array<Notes::Task>
     def defaults
-      # default_dir = defined?(Rails) ? Rails.root : Dir.pwd
-      # options = Notes::Options.defaults(default_dir)
-
       options = Notes::Options.defaults
       files   = Notes.valid_files(options)
       return for_files(files, options[:flags])
     end
-
 
     private
 
@@ -132,12 +134,33 @@ module Notes
     def context_lines(lines, idx)
       ctx = []
       1.upto(5) do |i|
-        break unless lines[idx+i]
-        ctx << lines[idx+i]
+        num = idx+i
+        break unless lines[num]
+        ctx << lines[num]
       end
       ctx.join("\n")
     end
 
+    # Information about a line from git (author, date, etc)
+    #
+    # filename - A String filename
+    # idx - a 0-based line number
+    #
+    # Returns Hash
+    def line_info(filename, idx)
+      result = {}
+      return result unless Notes.git?
+
+      fields = Notes.blame(filename, idx+1)
+
+      author = fields["author"]
+      result[:author] = author if !author.nil? && !author.empty?
+
+      time = fields["author-time"] # ISO 8601
+      result[:date] = Time.at(time.to_i).to_s if !time.nil? && !time.empty?
+
+      result
+    end
   end
 
 end
