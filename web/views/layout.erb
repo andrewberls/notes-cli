@@ -58,9 +58,11 @@
         </div>
       </code>
 
-      <div class="task-toggle-container">
-        <i class="task-toggle fa fa-angle-down"></i>
-      </div>
+      {{ if (task.context !== "") { }}
+        <div class="task-toggle-container">
+          <i class="task-toggle fa fa-angle-down"></i>
+        </div>
+      {{ } }}
     </div>
   </script>
 
