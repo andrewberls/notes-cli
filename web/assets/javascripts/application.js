@@ -6,13 +6,31 @@ _.templateSettings = {
 
 window.Notes = {}
 
-$(function() {
+Notes.allTasks = {}; // { filename -> Backbone.Collection[Task] }
 
 
+Notes.Task = Backbone.Model.extend({});
 
-  $(document).on('click', '.task-toggle-container i', function() {
-    var $toggle = $(this),
-        $ctx = $toggle.parent().parent().find('.task-context'); // TODO: ugh
+
+// A view for a single task item
+Notes.TaskView = Backbone.View.extend({
+  tagName: 'div',
+  className: 'task',
+  tmpl: $('#tmpl-task').html(),
+
+  render: function() {
+    $(this.el).html(_.template(this.tmpl, { task: this.model.attributes }))
+    return this;
+  },
+
+  events: {
+    'click .task-toggle': 'toggleContext'
+  },
+
+  toggleContext: function() {
+    var $el = $(this.el),
+        $toggle = $el.find('.task-toggle'),
+        $ctx    = $el.find('.task-context');
 
     if ($ctx.is(':visible')) {
       $toggle.removeClass('fa-angle-up').addClass('fa-angle-down');
@@ -21,59 +39,39 @@ $(function() {
       $toggle.removeClass('fa-angle-down').addClass('fa-angle-up');
       $ctx.slideDown();
     }
-  });
-
-
-
-
-
-
-  $container = $('.tasks-container');
-  taskTmpl  = $('#tmpl-task').html();
-
-  var path = window.location.pathname;
-  $.getJSON((path === '/' ? '' : path) + "/tasks.json", function(json) {
-    var filename, tasks, task, compiled;
-    Notes.tasks = json; // TODO: do we want a Task class?
-
-    for (filename in json) {
-      tasks = json[filename];
-
-      $container.append("<h2 class='task-filename'>" + filename + "</h2>")
-
-      for (var i=0; i<tasks.length; i++) {
-        task = tasks[i];
-        compiled = _.template(taskTmpl, { task: task });
-        $container.append(compiled);
-      }
-    }
-  });
+  }
 });
 
 
+Notes.TasksCollection = Backbone.Collection.extend({
+  model: Notes.Task,
+
+  initialize: function() {
+    this.filename = '';
+  }
+});
 
 
+// A view for a collection of tasks grouped under a common filenam
+Notes.TaskCollectionView = Backbone.View.extend({
+  tagName: 'div',
+  classname: 'tasks-container',
+
+  render: function() {
+    var $el = $(this.el);
+    $el.append("<h2 class='task-filename'>"+this.collection.filename+"</h2>");
+
+    this.collection.each(function(task) {
+      $el.append(new Notes.TaskView({ model: task }).render().el);
+    });
+    return this;
+  }
+});
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-drawPiechart = function(data) {
-  var data = [ 0.25,0.5,0.25]; // TODO
-
+Notes.drawPiechart = function(data) {
   // Dimensions
-  var $chart = $('.chart');
-  if ($chart.length === 0) { return; }
-
+  var $chart = $('.chart'); // TODO: probably want to pass in selector
   var w = h = $chart.width(); // Delegate width to CSS
 
   var ringThickness = 35,
@@ -130,4 +128,48 @@ drawPiechart = function(data) {
   //   .html(function(d, i) { return swatchFor(d,i); })
 }
 
-drawPiechart();
+
+Notes.renderStats = function(stats) {
+  var totals = stats.totals;
+  if (jQuery.isEmptyObject(totals)) { return; }
+
+  // TODO: add in stats container
+  //
+  //   <div class="stats-container">
+  //     <div class="chart"></div>
+  //   </div>
+}
+
+
+Notes.renderTasks = function(all_tasks) {
+  var $container = $('.main-content-container'),
+      filename, tasks, collection, collectionView;
+
+  if ($.isEmptyObject(all_tasks)) {
+    // TODO - temporary hack
+    $container.html($("<div class='empty-tasks-container'>").append(
+      "<h2>No tasks matching the criteria were found!</h2>"));
+    return;
+  }
+
+  for (filename in all_tasks) {
+    tasks = all_tasks[filename];
+
+    collection = new Notes.TasksCollection(tasks);
+    collection.filename   = filename;
+    Notes.allTasks[filename] = collection;
+
+    collectionView = new Notes.TaskCollectionView({ collection: collection })
+    $container.append(collectionView.render().el);
+  }
+}
+
+
+$(function() {
+  var path = window.location.pathname;
+
+  $.getJSON((path === '/' ? '' : path) + "/tasks.json", function(json) {
+    Notes.renderStats(json.stats);
+    Notes.renderTasks(json.all_tasks);
+  });
+});
