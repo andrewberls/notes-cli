@@ -18,10 +18,9 @@ module Notes
     # to the console that includes the line number
     # and matched flag highlighted in color
     #
-    # flag_regex: Regex of search flags constructed from parsed options
-    #
     # TODO: different colors for different flags
-    def format(flag_regex)
+    def to_s
+      flag_regex = Regexp.new(@flags.join('|'), true)
       line  = @line.gsub(flag_regex) do |flag|
         Notes.colorize('yellow', flag)
       end
