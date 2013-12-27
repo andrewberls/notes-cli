@@ -89,4 +89,5 @@ end
 require 'notes-cli/version'
 require 'notes-cli/options'
 require 'notes-cli/tasks'
+require 'notes-cli/stats'
 require 'notes-cli/cli'
