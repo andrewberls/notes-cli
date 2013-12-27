@@ -35,30 +35,34 @@
   <!--
    Template for a single task
    Wrapped by Backbone in a div.task
+
+   TODO: multiple flag case!
   -->
   <script id="tmpl-task" type="text/template">
     <div class="task-header">
-      {{ var colorClass = 'color-' + Notes.colorFor(task.flags[0]); }}
+      {{ var flag = task.get('flags')[0]; }}
+      {{ var colorClass = 'color-' + Notes.colorFor(flag); }}
 
-      <div class="task-type {{= colorClass }}">{{= task.flags[0] }}</div>
+      <div class="task-type {{= colorClass }}">{{= flag }}</div>
       <div class="task-info">
-        <span class="task-author">{{= task.author}} TODO SHA</span>
-        <span class="task-date">{{= task.date }}</span>
+        <span class="task-author">{{= task.get('author') }} TODO SHA</span>
+        <span class="task-date">{{= task.get('date') }}</span>
       </div>
     </div>
 
     <div class="task-body">
       <code class="task-lines">
-        <pre class="task-line">{{= Notes.escapeHtml(task.line) }}</pre>
+        {{ var ltrim_count = Notes.min_ltrim(task.allLines()); }}
+        <pre class="task-line">{{= task.escapedLine().substr(ltrim_count) }}</pre>
         <div class="task-context">
-          {{ var context_lines = task.context.split("\n") }}
-          {{ context_lines.forEach(function(line) { }}
-            <pre class="task-line">{{= Notes.escapeHtml(line) }}</pre>
-          {{ }) }}
+          {{ task.escapedContextLines().forEach(function(line) { }}
+            {{ var trimmedLine = line.substr(ltrim_count); }}
+            <pre class="task-line">{{= trimmedLine === '' ? "&nbsp;" : trimmedLine }}</pre>
+          {{ }); }}
         </div>
       </code>
 
-      {{ if (task.context !== "") { }}
+      {{ if (task.get('context') !== "") { }}
         <div class="task-toggle-container">
           <i class="task-toggle fa fa-angle-down"></i>
         </div>

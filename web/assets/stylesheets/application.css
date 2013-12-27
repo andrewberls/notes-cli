@@ -214,6 +214,7 @@ body {
       background-color: #f9f9f9;
       display: block;
       font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+      overflow-x: scroll;
       width: 95%;
     }
       .task-line {

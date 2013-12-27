@@ -4,25 +4,42 @@ _.templateSettings = {
   evaluate: /\{\{(.+?)\}\}/g
 };
 
-window.Notes = {
-  escapeHtml: function(text) {
-    return $('<div>').text(text).html();
-  },
+// Global namespace object
+window.Notes = {}
 
-  // { filename -> Backbone.Collection[Task] },
-  allTasks: {},
-
-  // Filled in by the server
-  distinctFlags: [],
-
-  defaultFlags: ['TODO', 'OPTIMIZE', 'FIXME'],
-
-  // Color classes to be paired against distinct flags (for consistency)
-  colors: [
-    'purple','lightblue','fuschia','lightgreen','orange','green','blue',
-    'pink','turquoise','deepred',
-  ]
+Notes.escapeHtml = function(text) {
+  return $('<div>').text(text).html();
 }
+
+Notes.leadingWhitespaceCount = function(str) {
+  var count = 0;
+  while(str.charAt(0) === " " || str.charAt(0) === "\t") {
+    str = str.substr(1);
+    count++;
+  }
+  return count;
+}
+
+// Take an array of lines and return the smallest number of leading whitespaces
+// (tabs or spaces) from among them
+Notes.min_ltrim = function(lines) {
+  var counts = lines.map(function(line) { return Notes.leadingWhitespaceCount(line); })
+  return Math.min.apply(null, counts);
+}
+
+// { filename -> Backbone.Collection[Task] },
+Notes.allTasks = {}
+
+// Filled in by the server
+Notes.distinctFlags = []
+
+Notes.defaultFlags = ['TODO', 'OPTIMIZE', 'FIXME']
+
+// Color classes to be paired against distinct flags (for consistency)
+Notes.colors = [
+  'lightblue','purple','fuschia','lightgreen','orange','green','blue',
+  'pink','turquoise','deepred',
+]
 
 // Filtering criteria
 Notes.selectedFlags = Notes.defaultFlags;
@@ -43,7 +60,20 @@ Notes.colorFor = function(flagName) {
 
 
 
-Notes.Task = Backbone.Model.extend({});
+Notes.Task = Backbone.Model.extend({
+  escapedLine: function() {
+    return Notes.escapeHtml(this.get('line'));
+  },
+
+  escapedContextLines: function() {
+    return this.get('context').split("\n")
+               .map(function(e) { return Notes.escapeHtml(e); });
+  },
+
+  allLines: function() {
+    return [this.escapedLine()].concat(this.escapedContextLines());
+  }
+});
 
 
 // A view for a single task item
@@ -53,7 +83,7 @@ Notes.TaskView = Backbone.View.extend({
   tmpl: $('#tmpl-task').html(),
 
   render: function() {
-    $(this.el).html(_.template(this.tmpl, { task: this.model.attributes }));
+    $(this.el).html(_.template(this.tmpl, { task: this.model }));
     return this;
   },
 
