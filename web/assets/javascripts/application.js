@@ -4,9 +4,39 @@ _.templateSettings = {
   evaluate: /\{\{(.+?)\}\}/g
 };
 
-window.Notes = {}
+window.Notes = {
+  // { filename -> Backbone.Collection[Task] },
+  allTasks: {},
 
-Notes.allTasks = {}; // { filename -> Backbone.Collection[Task] }
+  // Filled in by the server
+  distinctFlags: [],
+
+  defaultFlags: ['TODO', 'OPTIMIZE', 'FIXME'],
+
+  // Color classes to be paired against distinct flags (for consistency)
+  colors: [
+    'purple','lightblue','fuschia','lightgreen','orange','green','blue',
+    'pink','turquoise','deepred',
+  ]
+}
+
+// Filtering criteria
+Notes.selectedFlags = Notes.defaultFlags;
+
+
+
+
+
+Notes.colorFor = function(flagName) {
+  // Map is tuple of [flagName, color]
+  return _.find(Notes.colorMap, function(map) { return map[0] == flagName })[1];
+}
+
+
+
+
+
+
 
 
 Notes.Task = Backbone.Model.extend({});
@@ -19,7 +49,7 @@ Notes.TaskView = Backbone.View.extend({
   tmpl: $('#tmpl-task').html(),
 
   render: function() {
-    $(this.el).html(_.template(this.tmpl, { task: this.model.attributes }))
+    $(this.el).html(_.template(this.tmpl, { task: this.model.attributes }));
     return this;
   },
 
@@ -67,6 +97,51 @@ Notes.TaskCollectionView = Backbone.View.extend({
     return this;
   }
 });
+
+
+// TODO: how to handle models here?
+Notes.SidebarFlag = Backbone.Model.extend({
+  defaults: {
+    checked: true
+  }
+});
+
+
+Notes.SidebarFlagView = Backbone.View.extend({
+  tagName: 'div',
+  className: 'flag-container',
+  tmpl: $('#tmpl-flag').html(),
+
+  render: function() {
+    $(this.el).html(_.template(this.tmpl, { flag: this.model.attributes }));
+    return this;
+  },
+
+  events: {
+    'click .checkbox': 'toggleCheckbox'
+  },
+
+  checkbox:  function() { return $(this.el).find('.checkbox'); },
+  check:     function() { this.checkbox().addClass('checked'); },
+  uncheck:   function() { this.checkbox().removeClass('checked'); },
+  isChecked: function() { return this.checkbox().hasClass('checked'); },
+
+  toggleCheckbox: function() {
+    var name = this.model.get('name');
+
+    if (this.isChecked()) {
+      // Removing
+      var idx = Notes.selectedFlags.indexOf(name);
+      Notes.selectedFlags.splice(idx, 1);
+      this.uncheck();
+    } else {
+      // Adding
+      Notes.selectedFlags.push(name);
+      this.check();
+    }
+  }
+});
+
 
 
 Notes.drawPiechart = function(data) {
@@ -141,6 +216,20 @@ Notes.renderStats = function(stats) {
 }
 
 
+// TODO: this only renders the initial state of the sidebar?
+// i.e., defaults?
+Notes.renderSidebar = function() {
+  var $sidebar = $('.flags-container'),
+      flag, flagView;
+
+  Notes.defaultFlags.forEach(function(flagName) {
+    flag     = new Notes.SidebarFlag({ name: flagName })
+    flagView = new Notes.SidebarFlagView({ model: flag });
+    $sidebar.append(flagView.render().el);
+  });
+}
+
+
 Notes.renderTasks = function(task_map) {
   var $container = $('.main-content-container'),
       filename, tasks, collection, collectionView;
@@ -169,7 +258,18 @@ $(function() {
   var path = window.location.pathname;
 
   $.getJSON((path === '/' ? '' : path) + "/tasks.json", function(json) {
-    Notes.renderStats(json.stats);
+    var stats = json.stats;
+
+    // Loading in global state on an async operation is bad mmk,
+    // but we're blocking until this point anyways
+    Notes.distinctFlags = stats.distinct_flags;
+
+    // TODO: concat with distinct, default, or selected?
+    Notes.allFlags = _.uniq(Notes.distinctFlags.concat(Notes.defaultFlags));
+    Notes.colorMap = _.zip(Notes.allFlags, Notes.colors);
+
+    Notes.renderStats(stats);
+    Notes.renderSidebar()
     Notes.renderTasks(json.task_map);
   });
 });

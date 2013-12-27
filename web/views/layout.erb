@@ -13,39 +13,61 @@
 
   <%= yield %>
 
+
+  <!--
+   Template for a flag checkbox in the sidebar
+   Wrapped by Backbone in a div.flag-container
+
+   TODO: color pairing needs testing
+   TODO: concat with distinct, default, or selected?
+
+  -->
+  <script id="tmpl-flag" type="text/template">
+    {{ var checkedClass = flag.checked ? 'checked' : ''; }}
+    {{ var colorClass   = 'color-' + Notes.colorFor(flag.name); }}
+
+    <div class="checkbox {{= checkedClass }} {{= colorClass }}"></div>
+    <span>{{= flag.name }}</span>
+    <a href="#" class="delete-flag-btn">&times;</a>
+  </script>
+
+
+  <!--
+   Template for a single task
+   Wrapped by Backbone in a div.task
+  -->
   <script id="tmpl-task" type="text/template">
-    <div class="task">
-      <div class="task-header">
-        <div class="task-type">{{= task.flags[0] }}</div>
-        <div class="task-info">
-          <span class="task-author">{{= task.author}} TODO SHA</span>
-          <span class="task-date">{{= task.date }}</span>
-        </div>
+    <div class="task-header">
+      <div class="task-type">{{= task.flags[0] }}</div>
+      <div class="task-info">
+        <span class="task-author">{{= task.author}} TODO SHA</span>
+        <span class="task-date">{{= task.date }}</span>
       </div>
+    </div>
 
-      <div class="task-body">
-        <code class="task-lines">
-          <pre class="task-line">{{= task.line }}</pre>
-          <div class="task-context">
-            {{ var context_lines = task.context.split("\n") }}
-            {{ for(var i=0; i<context_lines.length; i++) { }}
-              <pre class="task-line">{{= context_lines[i] }}</pre>
-            {{ } }}
-          </div>
-        </code>
-
-        <div class="task-toggle-container">
-          <i class="task-toggle fa fa-angle-down"></i>
+    <div class="task-body">
+      <code class="task-lines">
+        <pre class="task-line">{{= task.line }}</pre>
+        <div class="task-context">
+          {{ var context_lines = task.context.split("\n") }}
+          {{ context_lines.forEach(function(line) { }}
+            <pre class="task-line">{{= line }}</pre>
+          {{ }) }}
         </div>
+      </code>
+
+      <div class="task-toggle-container">
+        <i class="task-toggle fa fa-angle-down"></i>
       </div>
     </div>
   </script>
 
-  <!-- TODO: minify these -->
-  <script src="<%= @root %>/javascripts/d3.min.js"></script>
-  <script src="<%= @root %>/javascripts/jquery-1.10.2.min.js"></script>
-  <script src="<%= @root %>/javascripts/underscore.min.js"></script>
-  <script src="<%= @root %>/javascripts/backbone.min.js"></script>
+  <!-- TODO: minify/concatenate these -->
+  <script src="<%= @root %>/javascripts/lib/d3.min.js"></script>
+  <script src="<%= @root %>/javascripts/lib/jquery-1.10.2.min.js"></script>
+  <script src="<%= @root %>/javascripts/lib/underscore.min.js"></script>
+  <script src="<%= @root %>/javascripts/lib/backbone.min.js"></script>
+
   <script src="<%= @root %>/javascripts/application.js"></script>
 </body>
 </html>

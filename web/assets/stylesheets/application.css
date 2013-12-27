@@ -5,7 +5,20 @@ body {
   font-size: 13px;
 }
 
-
+.btn {
+  color: white;
+  display: inline-block;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+}
+  .btn-block { display: block; }
+  .btn-lightgreen {
+    background-color: #19A98A;
+  }
+    .btn-lightgreen:hover {
+      background-color: #169378;
+    }
 
 
 
@@ -69,22 +82,22 @@ body {
     font-weight: bold;
     margin-bottom: 20px;
   }
-  .tag-container {
+  .flag-container {
     margin-bottom: 15px;
     overflow: auto;
     position: relative;
   }
-    .tag-container:hover { cursor: pointer; }
-    .tag-container .delete-tag-btn {
+    .flag-container:hover { cursor: pointer; }
+    .flag-container .delete-flag-btn {
       color: #f9f9f9; /* TODO */
       display: none;
       float: right;
       margin-top: 1px;
       text-decoration: none;
     }
-      .tag-container:hover .delete-tag-btn { display: inline-block; }
-      .tag-container .delete-tag-btn:hover { color: #ccc; }
-    .tag-container .checkbox {
+      .flag-container:hover .delete-flag-btn { display: inline-block; }
+      .flag-container .delete-flag-btn:hover { color: #ccc; }
+    .flag-container .checkbox {
       border-radius: 3px;
       float: left;
       font-size: 1.1em;
@@ -95,11 +108,11 @@ body {
       width: 20px;
       height: 20px;
     }
-      .tag-container .checkbox.checked:before {
+      .flag-container .checkbox.checked:before {
         content: '\2713'; /* Unicode checkmark */
         color: white;
       }
-    .tag-container span {
+    .flag-container span {
       color: #9BA6B9;
       float: left;
       font-size: 1.1em;
@@ -107,6 +120,10 @@ body {
       line-height: 18px;
       text-transform: uppercase;
     }
+  .filter-btn {
+    font-size: 1.2em;
+    margin-top: 25px;
+  }
 
 
 
