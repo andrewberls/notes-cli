@@ -28,6 +28,16 @@ body {
   overflow: auto;
   padding: 10px 15px;
 }
+  .root {
+    color: #b0b0b0;
+    float: left;
+    font-size: 1.1em;
+    margin-top: 7px;
+  }
+    .root span {
+      font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+      font-size: 1em;
+    }
 
 
 
