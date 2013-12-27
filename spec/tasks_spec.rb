@@ -75,12 +75,14 @@ describe 'tasks' do
     it 'reads information from git' do
       Notes.should_receive(:blame).and_return({
         "author" => "Andrew Berls",
-        "author-time" => "1381862180"
+        "author-time" => "1381862180",
+        "sha" => "705690fb747a2ae82a96edb21df7e424f5cc518b",
       })
 
       info = Notes::Tasks.send(:line_info, 'doesnt_matter_stubbed_out', 0)
-      info[:author].should == "Andrew Berls"
+      info[:author].should == 'Andrew Berls'
       info[:date].should == '2013-10-15 11:36:20 -0700'
+      info[:sha].should == '705690fb747a2ae82a96edb21df7e424f5cc518b'
     end
   end
 

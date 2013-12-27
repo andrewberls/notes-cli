@@ -20,7 +20,7 @@ module Notes
   end
 
   # Parse raw output from git-blame(1)
-  # (results not interpreted in any way)
+  # (results not interpreted except for SHA)
   #
   # Returns Hash
   def blame(filename, line_num)
@@ -29,9 +29,12 @@ module Notes
     begin
       Dir.chdir(root) do
         blame = `git blame -L#{line_num},#{line_num} --line-porcelain -- #{filename} 2>/dev/null`.split("\n")
+        sha = blame.shift.split(' ').first
+        fields['sha'] = sha if sha != '0'*40 # Only use actual commit SHAs
+
         blame.each do |line|
           fieldname, *values = line.split(' ')
-          fields[fieldname]  = values.join(' ')
+          fields[fieldname.to_sym]  = values.join(' ')
         end
       end
     rescue

@@ -159,6 +159,9 @@ module Notes
       time = fields["author-time"] # ISO 8601
       result[:date] = Time.at(time.to_i).to_s if !time.nil? && !time.empty?
 
+      sha = fields["sha"]
+      result[:sha] = sha if !sha.nil?
+
       result
     end
   end
