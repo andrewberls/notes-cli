@@ -26,7 +26,7 @@ module Notes
         end
       end
 
-      { flag_counts: counts }
+      counts
     end
 
     # Compute the distinct flags found in a a set of tasks

@@ -26,11 +26,9 @@ describe 'stats' do
 
     it 'counts stats correctly' do
       Notes::Stats.flag_counts(tasks).should == {
-        flag_counts: {
-          'TODO' => 2,
-          'OPTIMIZE' => 1,
-          'FIXME'  => 1
-        }
+        'TODO' => 2,
+        'OPTIMIZE' => 1,
+        'FIXME'  => 1
       }
     end
 
