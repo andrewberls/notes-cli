@@ -28,7 +28,7 @@ module Notes
         tasks.each { |filename, ts| tasks[filename] = ts.map(&:to_json) }
       end
 
-      { stats: @stats, all_tasks: @tasks }.to_json
+      { stats: @stats, task_map: @tasks }.to_json
     end
 
   end

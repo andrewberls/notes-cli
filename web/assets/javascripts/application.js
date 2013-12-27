@@ -130,8 +130,8 @@ Notes.drawPiechart = function(data) {
 
 
 Notes.renderStats = function(stats) {
-  var totals = stats.totals;
-  if (jQuery.isEmptyObject(totals)) { return; }
+  var flag_counts = stats.flag_counts;
+  if (jQuery.isEmptyObject(flag_counts)) { return; }
 
   // TODO: add in stats container
   //
@@ -141,19 +141,19 @@ Notes.renderStats = function(stats) {
 }
 
 
-Notes.renderTasks = function(all_tasks) {
+Notes.renderTasks = function(task_map) {
   var $container = $('.main-content-container'),
       filename, tasks, collection, collectionView;
 
-  if ($.isEmptyObject(all_tasks)) {
+  if ($.isEmptyObject(task_map)) {
     // TODO - temporary hack
     $container.html($("<div class='empty-tasks-container'>").append(
       "<h2>No tasks matching the criteria were found!</h2>"));
     return;
   }
 
-  for (filename in all_tasks) {
-    tasks = all_tasks[filename];
+  for (filename in task_map) {
+    tasks = task_map[filename];
 
     collection = new Notes.TasksCollection(tasks);
     collection.filename   = filename;
@@ -170,6 +170,6 @@ $(function() {
 
   $.getJSON((path === '/' ? '' : path) + "/tasks.json", function(json) {
     Notes.renderStats(json.stats);
-    Notes.renderTasks(json.all_tasks);
+    Notes.renderTasks(json.task_map);
   });
 });

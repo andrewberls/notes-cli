@@ -5,7 +5,12 @@ describe 'stats' do
   context 'compute' do
     let(:file)    { Tempfile.new('example') }
     let(:options) { Notes::Options.defaults }
-    let(:tasks)   { Notes::Tasks.for_file(file.path, options[:flags]) }
+
+    # This looks a bit strange, but the standard mapping format is
+    # { filename -> [tasks] }
+    let(:tasks) do
+      { file.path => Notes::Tasks.for_file(file.path, options[:flags]) }
+    end
 
     before do
       File.open(file, 'w') do |f|
@@ -20,13 +25,17 @@ describe 'stats' do
     end
 
     it 'counts stats correctly' do
-      Notes::Stats.compute({ file.path => tasks }).should == {
-        totals: {
+      Notes::Stats.flag_counts(tasks).should == {
+        flag_counts: {
           'TODO' => 2,
           'OPTIMIZE' => 1,
           'FIXME'  => 1
         }
       }
+    end
+
+    it 'aggregates distinct flags' do
+      Notes::Stats.distinct_flags(tasks).should == ['TODO', 'OPTIMIZE', 'FIXME']
     end
   end
 end
