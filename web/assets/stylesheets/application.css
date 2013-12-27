@@ -165,9 +165,6 @@ body {
       padding: 15px 10px;
     }
     .task-type {
-      /* TODO: dynamic background-color */
-      background-color: #19A98A;
-
       color: white;
       float: left;
       font-size: 1.4em;

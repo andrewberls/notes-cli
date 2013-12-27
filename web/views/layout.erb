@@ -38,7 +38,9 @@
   -->
   <script id="tmpl-task" type="text/template">
     <div class="task-header">
-      <div class="task-type">{{= task.flags[0] }}</div>
+      {{ var colorClass = 'color-' + Notes.colorFor(task.flags[0]); }}
+
+      <div class="task-type {{= colorClass }}">{{= task.flags[0] }}</div>
       <div class="task-info">
         <span class="task-author">{{= task.author}} TODO SHA</span>
         <span class="task-date">{{= task.date }}</span>
@@ -47,11 +49,11 @@
 
     <div class="task-body">
       <code class="task-lines">
-        <pre class="task-line">{{= task.line }}</pre>
+        <pre class="task-line">{{= Notes.escapeHtml(task.line) }}</pre>
         <div class="task-context">
           {{ var context_lines = task.context.split("\n") }}
           {{ context_lines.forEach(function(line) { }}
-            <pre class="task-line">{{= line }}</pre>
+            <pre class="task-line">{{= Notes.escapeHtml(line) }}</pre>
           {{ }) }}
         </div>
       </code>
@@ -63,11 +65,11 @@
   </script>
 
   <!-- TODO: minify/concatenate these -->
-  <script src="<%= @root %>/javascripts/lib/d3.min.js"></script>
   <script src="<%= @root %>/javascripts/lib/jquery-1.10.2.min.js"></script>
+  <script src="<%= @root %>/javascripts/lib/d3.min.js"></script>
   <script src="<%= @root %>/javascripts/lib/underscore.min.js"></script>
   <script src="<%= @root %>/javascripts/lib/backbone.min.js"></script>
-
   <script src="<%= @root %>/javascripts/application.js"></script>
+
 </body>
 </html>

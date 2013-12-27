@@ -5,6 +5,10 @@ _.templateSettings = {
 };
 
 window.Notes = {
+  escapeHtml: function(text) {
+    return $('<div>').text(text).html();
+  },
+
   // { filename -> Backbone.Collection[Task] },
   allTasks: {},
 
