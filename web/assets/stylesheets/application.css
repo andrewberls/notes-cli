@@ -91,10 +91,10 @@ body {
     .flag-container:last-child { margin-bottom: 0; }
     .flag-container:hover { cursor: pointer; }
     .flag-container .delete-flag-btn {
-      color: #f9f9f9; /* TODO */
+      color: #f9f9f9;
       display: none;
       float: right;
-      margin-top: 1px;
+      margin-top: 5px;
       text-decoration: none;
     }
       .flag-container:hover .delete-flag-btn { display: inline-block; }
