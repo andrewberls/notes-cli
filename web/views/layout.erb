@@ -19,15 +19,13 @@
    Wrapped by Backbone in a div.flag-container
 
    TODO: color pairing needs testing
-   TODO: concat with distinct, default, or selected?
-
   -->
   <script id="tmpl-flag" type="text/template">
-    {{ var checkedClass = flag.checked ? 'checked' : ''; }}
-    {{ var colorClass   = 'color-' + Notes.colorFor(flag.name); }}
+    {{ var name = flag.get('name') }}
+    {{ var colorClass = 'color-' + Notes.colorFor(name); }}
 
-    <div class="checkbox {{= checkedClass }} {{= colorClass }}"></div>
-    <span>{{= flag.name }}</span>
+    <div class="checkbox {{= flag.checkedClass() }} {{= colorClass }}"></div>
+    <span>{{= name }}</span>
     <a href="#" class="delete-flag-btn">&times;</a>
   </script>
 

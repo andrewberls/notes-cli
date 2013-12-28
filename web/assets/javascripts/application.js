@@ -48,7 +48,7 @@ Notes.selectedFlags = Notes.defaultFlags;
 
 
 Notes.colorFor = function(flagName) {
-  // Map is tuple of [flagName, color]
+  // colorMap is tuple of [flagName, color]
   return _.find(Notes.colorMap, function(map) { return map[0] == flagName })[1];
 }
 
@@ -146,13 +146,13 @@ Notes.TaskCollectionView = Backbone.View.extend({
 });
 
 
-// TODO: how to handle models here?
 Notes.SidebarFlag = Backbone.Model.extend({
-  defaults: {
-    checked: true
+  defaults: { checked: true },
+
+  checkedClass: function() {
+    return this.get('checked') ? 'checked' : '';
   }
 });
-
 
 Notes.SidebarFlagView = Backbone.View.extend({
   tagName: 'div',
@@ -160,7 +160,7 @@ Notes.SidebarFlagView = Backbone.View.extend({
   tmpl: $('#tmpl-flag').html(),
 
   render: function() {
-    $(this.el).html(_.template(this.tmpl, { flag: this.model.attributes }));
+    $(this.el).html(_.template(this.tmpl, { flag: this.model }));
     return this;
   },
 
@@ -263,8 +263,7 @@ Notes.renderStats = function(stats) {
 }
 
 
-// TODO: this only renders the initial state of the sidebar?
-// i.e., defaults?
+// TODO: this only renders the initial state of the sidebar, i.e. defaults
 Notes.renderSidebar = function() {
   var $sidebar = $('.flags-container'),
       flag, flagView;
