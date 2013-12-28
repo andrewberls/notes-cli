@@ -163,7 +163,7 @@ body {
   }
     .task-type, .task-info {
       box-sizing: border-box;
-      padding: 15px 10px;
+      padding: 12px 10px;
     }
     .task-type {
       color: white;
@@ -183,12 +183,19 @@ body {
     }
     .task-info {
       float: left;
-      padding: 15px;
+      padding-left: 15px;
+      padding-right: 15px;
       width: 90%;
       /*width: 80%;*/
     }
     .task-author {
       font-size: 1.2em;
+    }
+    .task-sha {
+      color: #cfcfcf;
+      display: inline-block;
+      font-size: 0.9em;
+      margin-left: 15px;
     }
     .task-date {
       display: inline-block;

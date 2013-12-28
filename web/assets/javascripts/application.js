@@ -72,6 +72,20 @@ Notes.Task = Backbone.Model.extend({
 
   allLines: function() {
     return [this.escapedLine()].concat(this.escapedContextLines());
+  },
+
+  formattedSha: function() {
+    var sha = this.get('sha');
+    return sha ? "@ " + sha.slice(0,7) : '';
+  },
+
+  formattedDate: function() {
+    var date  = new Date(this.get('date')),
+        month = date.getMonth() + 1,
+        day   = date.getDate(),
+        year  = date.getFullYear().toString().slice(2);
+
+    return month + '/' + day + '/' + year;
   }
 });
 

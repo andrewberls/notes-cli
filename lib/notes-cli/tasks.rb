@@ -7,6 +7,7 @@ module Notes
     def initialize(options={})
       @author   = options[:author]
       @date     = options[:date]
+      @sha      = options[:sha]
       @filename = options[:filename]
       @line_num = options[:line_num]
       @line     = options[:line]
@@ -36,7 +37,8 @@ module Notes
        flags:    @flags,
        context:  @context,
        author:   @author,
-       date:    @date
+       date:     @date,
+       sha:      @sha
       }
     end
   end
@@ -86,6 +88,7 @@ module Notes
             info = line_info(filename, idx)
             task_options[:author] = info[:author] if info[:author]
             task_options[:date]   = info[:date] if info[:date]
+            task_options[:sha]    = info[:sha] if info[:sha]
             tasks << Notes::Task.new(task_options)
           end
           counter += 1

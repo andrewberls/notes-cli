@@ -45,8 +45,9 @@
 
       <div class="task-type {{= colorClass }}">{{= flag }}</div>
       <div class="task-info">
-        <span class="task-author">{{= task.get('author') }} TODO SHA</span>
-        <span class="task-date">{{= task.get('date') }}</span>
+        <span class="task-author">{{= task.get('author') }}</span>
+        <span class="task-sha">{{= task.formattedSha() }}</span>
+        <span class="task-date">{{= task.formattedDate() }}</span>
       </div>
     </div>
 

@@ -34,7 +34,7 @@ module Notes
 
         blame.each do |line|
           fieldname, *values = line.split(' ')
-          fields[fieldname.to_sym]  = values.join(' ')
+          fields[fieldname]  = values.join(' ')
         end
       end
     rescue
