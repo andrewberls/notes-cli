@@ -10,9 +10,8 @@ module Notes
     # Only outputs to console; returns nothing
     def find_all
       files = Notes.valid_files(@options)
-      flags = @options[:flags]
 
-      Notes::Tasks.for_files(files, flags).each do |filename, tasks|
+      Notes::Tasks.for_files(files, @options).each do |filename, tasks|
         # Print only relative paths, without leading ./
         name = filename.gsub(Dir.pwd, '')
         name.slice!(0..1) if name.start_with?('./')

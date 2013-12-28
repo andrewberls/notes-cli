@@ -84,11 +84,11 @@ module Notes
               context: context_lines(lines, idx)
             }
 
-            # See what we can get from git
+            # Extract line information from git
             info = line_info(filename, idx)
-            task_options[:author] = info[:author] if info[:author]
-            task_options[:date]   = info[:date] if info[:date]
-            task_options[:sha]    = info[:sha] if info[:sha]
+            task_options[:author] = info[:author]
+            task_options[:date]   = info[:date]
+            task_options[:sha]    = info[:sha]
             tasks << Notes::Task.new(task_options)
           end
           counter += 1
@@ -103,18 +103,17 @@ module Notes
 
     # Compute all tasks for a set of files and flags
     #
-    # files - Array of String filenames
-    # flags - Array of String flags to match against
+    # files   - Array of String filenames
+    # options - Hash of options
+    #   :flags - Array of String flags to match against
     #
     # Returns a hash of filename -> Array<Notes::Task>
-    def for_files(files, flags)
+    def for_files(files, options)
+      flags  = options[:flags]
       result = {}
       files.each do |filename|
-        tasks = Notes::Tasks.for_file(filename, flags)
-
-        # TODO: testing shortnames
+        tasks    = Notes::Tasks.for_file(filename, flags)
         filename = filename.gsub(Dir.pwd, '').gsub(/^\//, '')
-
         result[filename] = tasks
       end
 
@@ -127,12 +126,13 @@ module Notes
     def defaults
       options = Notes::Options.defaults
       files   = Notes.valid_files(options)
-      return for_files(files, options[:flags])
+      return for_files(files, options)
     end
 
     private
 
     # Return up to 5 lines following the line at idx
+    # TODO: it might be better to have before_context and after_context
     def context_lines(lines, idx)
       ctx = []
       1.upto(5) do |i|
@@ -156,13 +156,13 @@ module Notes
       fields = Notes.blame(filename, idx+1)
 
       author = fields["author"]
-      result[:author] = author if !author.nil? && !author.empty?
+      result[:author] = author if author && !author.empty?
 
       time = fields["author-time"] # ISO 8601
-      result[:date] = Time.at(time.to_i).to_s if !time.nil? && !time.empty?
+      result[:date] = Time.at(time.to_i).to_s if time && !time.empty?
 
       sha = fields["sha"]
-      result[:sha] = sha if !sha.nil?
+      result[:sha] = sha if sha
 
       result
     end

@@ -14,7 +14,7 @@ module Notes
   # Are we in a git repo?
   def git?
     Dir.chdir(root) do
-      `git status`
+      `git status 2>/dev/null`
       return $?.success?
     end
   end
