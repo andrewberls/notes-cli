@@ -77,13 +77,12 @@ module Notes
 
           if matched_flags.any?
             task_options = {
-              filename: filename,
+              filename: Notes.shortname(filename),
               line_num: counter,
               line: line,
               flags: matched_flags,
               context: context_lines(lines, idx)
             }
-
             # Extract line information from git
             info = line_info(filename, idx)
             task_options[:author] = info[:author]
@@ -107,22 +106,20 @@ module Notes
     # options - Hash of options
     #   :flags - Array of String flags to match against
     #
-    # Returns a hash of filename -> Array<Notes::Task>
+    # Returns Array[Notes::Task]
     def for_files(files, options)
       flags  = options[:flags]
-      result = {}
+      result = []
       files.each do |filename|
-        tasks    = Notes::Tasks.for_file(filename, flags)
-        filename = filename.gsub(Dir.pwd, '').gsub(/^\//, '')
-        result[filename] = tasks
+        tasks = Notes::Tasks.for_file(filename, flags)
+        result += tasks
       end
 
-      # Delete file listings with no tasks
-      result.delete_if { |k, v| v.empty? }
+      result
     end
 
     # Return list of tasks using default file locations and flags
-    # Returns a hash of filename -> Array<Notes::Task>
+    # Returns Array[Notes::Task]
     def defaults
       options = Notes::Options.defaults
       files   = Notes.valid_files(options)

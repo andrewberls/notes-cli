@@ -19,6 +19,19 @@ module Notes
     end
   end
 
+  # Convert a filename to a relative path
+  #
+  # filename - String
+  #
+  # Ex:
+  #   shortname("/Users/andrew/code/notes-cli/bin/notes")
+  #   => "bin/notes"
+  #
+  # Returns String
+  def shortname(filename)
+    filename.gsub(Dir.pwd, '').gsub(/^\//, '')
+  end
+
   # Parse raw output from git-blame(1)
   # (results not interpreted except for SHA)
   #

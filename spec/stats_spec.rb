@@ -5,12 +5,7 @@ describe 'stats' do
   context 'compute' do
     let(:file)    { Tempfile.new('example') }
     let(:options) { Notes::Options.defaults }
-
-    # This looks a bit strange, but the standard mapping format is
-    # { filename -> [tasks] }
-    let(:tasks) do
-      { file.path => Notes::Tasks.for_file(file.path, options[:flags]) }
-    end
+    let(:tasks)   { Notes::Tasks.for_file(file.path, options[:flags]) }
 
     before do
       File.open(file, 'w') do |f|

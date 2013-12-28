@@ -23,12 +23,9 @@ module Notes
       # TODO: cache this somehow
       default_tasks = Notes::Tasks.defaults
       @stats = Notes::Stats.compute(default_tasks)
+      @tasks = default_tasks.map(&:to_json)
 
-      @tasks = default_tasks.tap do |tasks|
-        tasks.each { |filename, ts| tasks[filename] = ts.map(&:to_json) }
-      end
-
-      { stats: @stats, task_map: @tasks }.to_json
+      { stats: @stats, tasks: @tasks }.to_json
     end
 
   end

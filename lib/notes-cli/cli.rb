@@ -9,14 +9,11 @@ module Notes
     # Prints filenames along with all tasks found per file
     # Only outputs to console; returns nothing
     def find_all
-      files = Notes.valid_files(@options)
+      files    = Notes.valid_files(@options)
+      task_map = Notes::Tasks.for_files(files, @options).group_by(&:filename)
 
-      Notes::Tasks.for_files(files, @options).each do |filename, tasks|
-        # Print only relative paths, without leading ./
-        name = filename.gsub(Dir.pwd, '')
-        name.slice!(0..1) if name.start_with?('./')
-
-        puts "#{name}:"
+      task_map.each do |filename, tasks|
+        puts "#{filename}:"
         tasks.each { |task| puts task.to_s }
         puts ''
       end

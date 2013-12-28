@@ -27,8 +27,7 @@ Notes.min_ltrim = function(lines) {
   return Math.min.apply(null, counts);
 }
 
-// { filename -> Backbone.Collection[Task] },
-Notes.allTasks = {}
+Notes.allTasks = []
 
 // Filled in by the server
 Notes.distinctFlags = []
@@ -278,23 +277,23 @@ Notes.renderSidebar = function() {
 }
 
 
-Notes.renderTasks = function(task_map) {
+Notes.renderTasks = function(tasks) {
   var $container = $('.main-content-container'),
-      filename, tasks, collection, collectionView;
+      filename, collection, collectionView;
 
-  if ($.isEmptyObject(task_map)) {
+  // filename -> [Notes.Task]
+  var taskMap = _.groupBy(tasks, function(t) { return t.get('filename'); });
+
+  if ($.isEmptyObject(taskMap)) {
     // TODO - temporary hack
     $container.html($("<div class='empty-tasks-container'>").append(
       "<h2>No tasks matching the criteria were found!</h2>"));
     return;
   }
 
-  for (filename in task_map) {
-    tasks = task_map[filename];
-
-    collection = new Notes.TasksCollection(tasks);
+  for (filename in taskMap) {
+    collection = new Notes.TasksCollection(taskMap[filename]);
     collection.filename   = filename;
-    Notes.allTasks[filename] = collection;
 
     collectionView = new Notes.TaskCollectionView({ collection: collection })
     $container.append(collectionView.render().el);
@@ -306,10 +305,11 @@ $(function() {
   var path = window.location.pathname;
 
   $.getJSON((path === '/' ? '' : path) + "/tasks.json", function(json) {
-    var stats = json.stats;
+    var stats = json.stats,
+        tasks = json.tasks.map(function(attrs) { return new Notes.Task(attrs) });
 
-    // Loading in global state on an async operation is bad mmk,
-    // but we're blocking until this point anyways
+    Notes.allTasks = tasks;
+
     Notes.distinctFlags = stats.distinct_flags;
 
     // TODO: concat with distinct, default, or selected?
@@ -317,7 +317,7 @@ $(function() {
     Notes.colorMap = _.zip(Notes.allFlags, Notes.colors);
 
     Notes.renderStats(stats);
-    Notes.renderSidebar()
-    Notes.renderTasks(json.task_map);
+    Notes.renderSidebar();
+    Notes.renderTasks(tasks);
   });
 });
