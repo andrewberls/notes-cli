@@ -6,6 +6,7 @@ body {
 }
 
 .btn {
+  border: 0;
   border-radius: 2px;
   color: white;
   display: inline-block;
@@ -14,12 +15,10 @@ body {
   text-decoration: none;
 }
   .btn-block { display: block; }
-  .btn-lightgreen {
-    background-color: #19A98A;
-  }
-    .btn-lightgreen:hover {
-      background-color: #169378;
-    }
+  .btn-lightgreen { background-color: #19A98A; }
+    .btn-lightgreen:hover { background-color: #169378; }
+  .btn-blue { background-color: #35B0FC; }
+    .btn-blue:hover { background-color: #13a3fb; }
 
 
 
@@ -83,11 +82,13 @@ body {
     font-weight: bold;
     margin-bottom: 20px;
   }
+  .flags-container { margin-bottom: 25px; }
   .flag-container {
     margin-bottom: 15px;
     overflow: auto;
     position: relative;
   }
+    .flag-container:last-child { margin-bottom: 0; }
     .flag-container:hover { cursor: pointer; }
     .flag-container .delete-flag-btn {
       color: #f9f9f9; /* TODO */
@@ -121,9 +122,27 @@ body {
       line-height: 18px;
       text-transform: uppercase;
     }
+  .add-flag-container {
+    margin-bottom: 25px;
+    overflow: auto;
+  }
+    .add-flag, .add-flag-btn {
+      box-sizing: border-box;
+      float: left;
+    }
+    .add-flag {
+      border: 0;
+      border-radius: 2px;
+      margin: 0 5% 0 0;
+      padding: 10px 7px;
+      width: 75%;
+    }
+    .add-flag-btn {
+      margin: 0;
+      width: 20%;
+    }
   .filter-btn {
     font-size: 1.2em;
-    margin-top: 25px;
   }
 
 
