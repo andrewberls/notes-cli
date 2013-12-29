@@ -16,14 +16,20 @@ module Notes
     get '/' do
       # TODO: there has to be a better way to get the mounted root
       @root = request.env["SCRIPT_NAME"]
+
       erb :index
     end
 
     get '/tasks.json' do
       # TODO: cache this somehow
-      default_tasks = Notes::Tasks.defaults
-      @stats = Notes::Stats.compute(default_tasks)
-      @tasks = default_tasks.map(&:to_json)
+      options = Notes::Options.defaults
+      if flags = params[:flags]
+        options[:flags].concat(flags)
+      end
+
+      tasks  = Notes::Tasks.all(options)
+      @stats = Notes::Stats.compute(tasks)
+      @tasks = tasks.map(&:to_json)
 
       { stats: @stats, tasks: @tasks }.to_json
     end

@@ -118,12 +118,14 @@ module Notes
       result
     end
 
-    # Return list of tasks using default file locations and flags
+    # Return list of tasks for the provided options
+    # If no options are provided, will use default
+    # file locations and flags
+    #
     # Returns Array[Notes::Task]
-    def defaults
-      options = Notes::Options.defaults
-      files   = Notes.valid_files(options)
-      return for_files(files, options)
+    def all(options = Notes::Options.defaults)
+      files = Notes.valid_files(options)
+      for_files(files, options)
     end
 
     private
