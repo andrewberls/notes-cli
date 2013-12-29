@@ -50,15 +50,24 @@
     </div>
 
     <div class="task-body">
-      <code class="task-lines">
+      <code class="task-lines-container">
         {{ var ltrim_count = Notes.min_ltrim(task.allLines()); }}
+        {{ var lineNum     = task.get('line_num'); }}
 
-        <pre class="task-line">{{= task.highlightedLine().substr(ltrim_count) }}</pre>
+        <div class="task-line-container">
+          <div class="task-line-num">{{= lineNum }}</div>
+          <pre class="task-line">{{= task.highlightedLine().substr(ltrim_count) }}</pre>
+        </div>
+
         <div class="task-context">
-          {{ task.escapedContextLines().forEach(function(line) { }}
-            {{ var trimmedLine = line.substr(ltrim_count); }}
-            <pre class="task-line">{{= trimmedLine === '' ? "&nbsp;" : trimmedLine }}</pre>
-          {{ }); }}
+          {{ var contextLines = task.escapedContextLines(); }}
+          {{ for(var i=0; i<contextLines.length; i++) { }}
+            {{ var trimmedLine = contextLines[i].substr(ltrim_count); }}
+            <div class="task-line-container">
+              <div class="task-line-num">{{= lineNum + (i+1) }}</div>
+              <pre class="task-line">{{= trimmedLine === '' ? "&nbsp;" : trimmedLine }}</pre>
+            </div>
+          {{ } }}
         </div>
       </code>
 
