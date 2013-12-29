@@ -40,17 +40,16 @@ Notes.colors = [
   'pink','turquoise','deepred',
 ]
 
+Notes.colorFor = function(flagName) {
+  return _.find(Notes.colorMap, function(map) { return map[0] == flagName })[1];
+}
+
 // Filtering criteria
 Notes.selectedFlags = Notes.defaultFlags;
 
 
 
 
-
-Notes.colorFor = function(flagName) {
-  // colorMap is tuple of [flagName, color]
-  return _.find(Notes.colorMap, function(map) { return map[0] == flagName })[1];
-}
 
 
 
@@ -71,6 +70,13 @@ Notes.Task = Backbone.Model.extend({
 
   allLines: function() {
     return [this.escapedLine()].concat(this.escapedContextLines());
+  },
+
+  highlightedLine: function() {
+    var regex = new RegExp(this.get('flags').join('|'), 'gi');
+    return this.get('line').replace(regex, function(flag) {
+      return "<strong>"+flag+"</strong>";
+    });
   },
 
   formattedSha: function() {

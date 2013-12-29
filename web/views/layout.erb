@@ -22,7 +22,7 @@
   -->
   <script id="tmpl-flag" type="text/template">
     {{ var name = flag.get('name') }}
-    {{ var colorClass = 'color-' + Notes.colorFor(name); }}
+    {{ var colorClass = 'bg-' + Notes.colorFor(name); }}
 
     <div class="checkbox {{= flag.checkedClass() }} {{= colorClass }}"></div>
     <span>{{= name }}</span>
@@ -34,12 +34,12 @@
    Template for a single task
    Wrapped by Backbone in a div.task
 
-   TODO: multiple flag case!
+   TODO: multiple flag case?
   -->
   <script id="tmpl-task" type="text/template">
     <div class="task-header">
-      {{ var flag = task.get('flags')[0]; }}
-      {{ var colorClass = 'color-' + Notes.colorFor(flag); }}
+      {{ var flag  = task.get('flags')[0]; }}
+      {{ var colorClass = 'bg-' + Notes.colorFor(flag); }}
 
       <div class="task-type {{= colorClass }}">{{= flag }}</div>
       <div class="task-info">
@@ -52,7 +52,8 @@
     <div class="task-body">
       <code class="task-lines">
         {{ var ltrim_count = Notes.min_ltrim(task.allLines()); }}
-        <pre class="task-line">{{= task.escapedLine().substr(ltrim_count) }}</pre>
+
+        <pre class="task-line">{{= task.highlightedLine().substr(ltrim_count) }}</pre>
         <div class="task-context">
           {{ task.escapedContextLines().forEach(function(line) { }}
             {{ var trimmedLine = line.substr(ltrim_count); }}
