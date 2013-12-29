@@ -165,8 +165,9 @@ body {
 
 
 .task-filename {
-  font-size: 2em;
-  margin-bottom: 20px;
+  font-size: 1.4em;
+  font-weight: bold;
+  margin-bottom: 15px;
 }
 
 .task {

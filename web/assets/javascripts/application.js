@@ -142,7 +142,7 @@ Notes.TaskCollectionView = Backbone.View.extend({
 
   render: function() {
     var $el = $(this.el);
-    $el.append("<h2 class='task-filename'>"+this.collection.filename+"</h2>");
+    $el.append("<h2 class='task-filename'>"+this.collection.filename+":</h2>");
 
     this.collection.each(function(task) {
       $el.append(new Notes.TaskView({ model: task }).render().el);
