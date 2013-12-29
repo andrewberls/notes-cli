@@ -74,7 +74,7 @@ Notes.Task = Backbone.Model.extend({
 
   highlightedLine: function() {
     var regex = new RegExp(this.get('flags').join('|'), 'gi');
-    return this.get('line').replace(regex, function(flag) {
+    return this.escapedLine().replace(regex, function(flag) {
       return "<strong>"+flag+"</strong>";
     });
   },
