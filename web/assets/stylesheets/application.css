@@ -141,28 +141,20 @@ body {
       margin: 0;
       width: 20%;
     }
-  .filter-btn {
-    font-size: 1.2em;
-  }
+  .filter-btn { font-size: 1.2em; }
 
 
-
-.main-content-container {
-  padding: 20px;
-}
-
+.main-content-container { padding: 20px; }
 
 .tasks-container {}
 
-.empty-tasks-container {
+.empty-tasks-container,
+.loading-container {
   margin-top: 30px;
+  font-size: 2em;
   text-align: center;
-}
-  .empty-tasks-container h2 {
     color: #757575;
-    font-size: 2em;
-  }
-
+}
 
 .task-filename {
   font-size: 1.4em;
@@ -231,7 +223,7 @@ body {
     overflow: auto;
     padding: 10px;
     padding-right: 0;
-}
+  }
     .task-lines-container, .task-toggle-container {
       box-sizing: border-box;
       float: left;
@@ -299,9 +291,7 @@ body {
   padding: 5px 10px 4px;
   width: 200px;
 }
-  .search-container input {
-    border: 0;
-  }
+  .search-container input { border: 0; }
     .search-container input:focus { outline: 0; }
 
 

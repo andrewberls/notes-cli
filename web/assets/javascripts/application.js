@@ -274,6 +274,8 @@ Notes.renderSidebar = function() {
   var $sidebar = $('.flags-container'),
       flag, flagView;
 
+  $sidebar.empty();
+
   Notes.defaultFlags.forEach(function(flagName) {
     flag     = new Notes.SidebarFlag({ name: flagName })
     flagView = new Notes.SidebarFlagView({ model: flag });
@@ -285,6 +287,8 @@ Notes.renderSidebar = function() {
 Notes.renderTasks = function(tasks) {
   var $container = $('.main-content-container'),
       filename, collection, collectionView;
+
+  $container.empty();
 
   // filename -> [Notes.Task]
   var taskMap = _.groupBy(tasks, function(t) { return t.get('filename'); });
@@ -306,10 +310,18 @@ Notes.renderTasks = function(tasks) {
 }
 
 
-$(function() {
+Notes.addProgress = function() {
+  $('.loading-container').find('p').append('.')
+}
+
+
+// Fetch tasks from the server and re-render
+Notes.fetchTasks = function() {
+  progressInterval = setInterval(Notes.addProgress, 175);
+
   var path = window.location.pathname;
 
-  $.getJSON((path === '/' ? '' : path) + "/tasks.json", function(json) {
+  $.getJSON((path === '/' ? '' : path) + "/tasks.json", { flags: ['FINDME'] }, function(json) {
     var stats = json.stats,
         tasks = json.tasks.map(function(attrs) { return new Notes.Task(attrs) });
 
@@ -321,8 +333,20 @@ $(function() {
     Notes.allFlags = _.uniq(Notes.distinctFlags.concat(Notes.defaultFlags));
     Notes.colorMap = _.zip(Notes.allFlags, Notes.colors);
 
+    clearInterval(progressInterval);
     Notes.renderStats(stats);
     Notes.renderSidebar();
     Notes.renderTasks(tasks);
+  });
+}
+
+
+
+$(function() {
+  Notes.fetchTasks();
+
+  $(document).on('click', '.filter-btn', function() {
+    Notes.fetchTasks()
+    return false;
   });
 });
