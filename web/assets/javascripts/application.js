@@ -22,7 +22,7 @@ Notes.leadingWhitespaceCount = function(str) {
 
 // Take an array of lines and return the smallest number of leading whitespaces
 // (tabs or spaces) from among them
-Notes.min_ltrim = function(lines) {
+Notes.minLtrim = function(lines) {
   var counts = lines.map(function(line) { return Notes.leadingWhitespaceCount(line); })
   return Math.min.apply(null, counts);
 }
