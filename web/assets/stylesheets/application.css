@@ -94,7 +94,8 @@ body {
       color: #f9f9f9;
       display: none;
       float: right;
-      margin-top: 5px;
+      font-size: 1.1em;
+      margin-top: 4px;
       text-decoration: none;
     }
       .flag-container:hover .delete-flag-btn { display: inline-block; }
