@@ -4,13 +4,17 @@ _.templateSettings = {
   evaluate: /\{\{(.+?)\}\}/g
 };
 
+
 // Global namespace object
-window.Notes = {}
+window.Notes = {};
+
 
 Notes.escapeHtml = function(text) {
   return $('<div>').text(text).html();
 }
 
+
+// How many tabs or spaces does a string start with?
 Notes.leadingWhitespaceCount = function(str) {
   var count = 0;
   while(str.charAt(0) === " " || str.charAt(0) === "\t") {
@@ -20,6 +24,7 @@ Notes.leadingWhitespaceCount = function(str) {
   return count;
 }
 
+
 // Take an array of lines and return the smallest number of leading whitespaces
 // (tabs or spaces) from among them
 Notes.minLtrim = function(lines) {
@@ -27,12 +32,16 @@ Notes.minLtrim = function(lines) {
   return Math.min.apply(null, counts);
 }
 
-Notes.allTasks = []
 
-// Filled in by the server
-Notes.distinctFlags = []
+Notes.defaultFlags = ['TODO', 'OPTIMIZE', 'FIXME'];
 
-Notes.defaultFlags = ['TODO', 'OPTIMIZE', 'FIXME']
+
+Notes.getSelectedFlags = function() {
+  return Notes.sidebarView.collection
+    .filter(function(f) { return f.get('checked'); })
+    .map(function(f) { return f.get('name') });
+}
+
 
 // Color classes to be paired against distinct flags (for consistency)
 Notes.colors = [
@@ -40,21 +49,28 @@ Notes.colors = [
   'pink','turquoise','deepred',
 ]
 
-Notes.colorFor = function(flagName) {
-  return _.find(Notes.colorMap, function(map) { return map[0] == flagName })[1];
+// TODO
+Notes.buildColorMap = function(flags) {
+  var allFlags   = _.uniq(flags.concat(Notes.defaultFlags));
+  Notes.colorMap = _.zip(allFlags, Notes.colors);
 }
 
-// Filtering criteria
-Notes.selectedFlags = Notes.defaultFlags;
 
+Notes.colorFor = function(flagName) {
+  var map;
+  for (var i=0; i<Notes.colorMap.length; i++) {
+    map = Notes.colorMap[i];
+    if (map[0] === flagName) {
+      return map[1];
+    } else if (map[0] === undefined) {
+      // No existing mapping found - add new flag to colorMap
+      map[0] = flagName;
+      return map[1];
+    }
+  }
 
-
-
-
-
-
-
-
+  return Notes.colors[Notes.colors.length-1]; // TODO - default to last color in list
+}
 
 
 
@@ -65,7 +81,7 @@ Notes.Task = Backbone.Model.extend({
 
   escapedContextLines: function() {
     return this.get('context').split("\n")
-               .map(function(e) { return Notes.escapeHtml(e); });
+               .map(function(line) { return Notes.escapeHtml(line); });
   },
 
   allLines: function() {
@@ -135,7 +151,7 @@ Notes.TasksCollection = Backbone.Collection.extend({
 });
 
 
-// A view for a collection of tasks grouped under a common filenam
+// A view for a collection of tasks grouped under a common filename
 Notes.TaskCollectionView = Backbone.View.extend({
   tagName: 'div',
   classname: 'tasks-container',
@@ -152,15 +168,16 @@ Notes.TaskCollectionView = Backbone.View.extend({
 });
 
 
-Notes.SidebarFlag = Backbone.Model.extend({
+
+// A flag accompanied by a checkbox in the sidebar
+Notes.Flag = Backbone.Model.extend({
   defaults: { checked: true },
 
-  checkedClass: function() {
-    return this.get('checked') ? 'checked' : '';
-  }
+  checkedClass: function() { return this.get('checked') ? 'checked' : ''; }
 });
 
-Notes.SidebarFlagView = Backbone.View.extend({
+
+Notes.FlagView = Backbone.View.extend({
   tagName: 'div',
   className: 'flag-container',
   tmpl: $('#tmpl-flag').html(),
@@ -171,90 +188,86 @@ Notes.SidebarFlagView = Backbone.View.extend({
   },
 
   events: {
-    'click .checkbox': 'toggleCheckbox'
+    'click .checkbox': 'toggleCheck',
+    'click .delete-flag-btn': 'deleteFlag'
   },
 
-  checkbox:  function() { return $(this.el).find('.checkbox'); },
-  check:     function() { this.checkbox().addClass('checked'); },
-  uncheck:   function() { this.checkbox().removeClass('checked'); },
-  isChecked: function() { return this.checkbox().hasClass('checked'); },
+  $checkbox: function() { return $(this.el).find('.checkbox'); },
+  isChecked: function() { return this.$checkbox().hasClass('checked'); },
+  check: function() {
+    this.model.set('checked', true);
+    this.$checkbox().addClass('checked');
+  },
+  uncheck: function() {
+    this.model.set('checked', false);
+    this.$checkbox().removeClass('checked');
+  },
+  toggleCheck: function() {
+                 console.log("toggling check");
+                 this.isChecked() ? this.uncheck() : this.check(); },
 
-  toggleCheckbox: function() {
-    var name = this.model.get('name');
+  deleteFlag: function() {
+    Notes.sidebarView.collection.remove(this.model);
+    var $el = $(this.el);
+    $el.slideUp(200, function() { $el.remove(); });
+  }
+});
 
-    if (this.isChecked()) {
-      // Removing
-      var idx = Notes.selectedFlags.indexOf(name);
-      Notes.selectedFlags.splice(idx, 1);
-      this.uncheck();
-    } else {
-      // Adding
-      Notes.selectedFlags.push(name);
-      this.check();
-    }
+
+Notes.FlagCollection = Backbone.Collection.extend({
+  model: Notes.Flag,
+
+  // Add a flag into the collection unless it's already present
+  merge: function(flag) {
+    var attrs = { name: flag.toUpperCase() }
+        match = this.findWhere(attrs);
+    if (!match) { this.add(attrs); }
+  }
+});
+
+
+Notes.FlagCollectionView = Backbone.View.extend({
+  tagName: 'div',
+
+  render: function() {
+    var $el = $(this.el);
+    $el.html('');
+
+    this.collection.each(function(flag) {
+      $el.append(new Notes.FlagView({ model: flag }).render().el);
+    });
+    return this;
   }
 });
 
 
 
-Notes.drawPiechart = function(data) {
-  // Dimensions
-  var $chart = $('.chart'); // TODO: probably want to pass in selector
-  var w = h = $chart.width(); // Delegate width to CSS
-
-  var ringThickness = 35,
-      outerRadius   = w / 2,
-      innerRadius   = outerRadius - ringThickness;
-
-  // Function that takes in dataset and returns dataset annotated with arc angles, etc
-  var pie = d3.layout.pie()
-            .value(function(d) { return d; }); // TODO
-
-  var color = d3.scale.category20(); // TODO
-
-  // Arc drawing function
-  var arc = d3.svg.arc()
-          .innerRadius(innerRadius)
-          .outerRadius(outerRadius);
-
-  // Create svg element
-  var svg = d3.select(".chart")
-              .append("svg")
-              .attr('width', w)
-              .attr('height', h);
-
-  // Set up groups
-  arcs = svg.selectAll("g.arc")
-            .data(pie(data))
-            .enter()
-            .append('g')
-            .attr('class', 'arc')
-            .attr('transform', "translate(" + outerRadius + "," + outerRadius + ")");
-
-  // Draw arc paths
-  // A path's path description is defined in the d attribute
-  // so we call the arc generator, which generates the path information
-  // based on the data already bound to this group
-  arcs.append('path')
-      .attr('fill', function(d, i) { return color(i) })
-      .attr('d', arc);
-
-  // Draw legend w/ labels
-  // function swatchFor(d, i) {
-  //   if (d.percent === 0) return; // TODO
-
-  //   //<span class="swatch" style="background-color: #08c"></span> Ruby
-  //   return "<span class='swatch' style='background-color: " + color(i) + "'></span> " + d.language +
-  //     "<span class='percent'>("+Math.round(d.percent*100)+"%)</span>"
-  // }
-
-  // d3.select(selector + " .legend")
-  //   .selectAll('li')
-  //   .data(legendLangs)
-  //   .enter()
-  //   .append('li')
-  //   .html(function(d, i) { return swatchFor(d,i); })
+// Merge a custom flag into the sidebar and re-render
+Notes.addFlag = function(flag) {
+  if (flag === '') { return false; }
+  Notes.sidebarView.collection.merge(flag);
+  Notes.renderSidebar();
 }
+
+
+// Build (or rebuild) the sidebar from the flags
+// used to query the server
+Notes.buildSidebar = function(flags) {
+  var attrs = flags.map(function(f) { return { name: f }; });
+
+  Notes.sidebarView = new Notes.FlagCollectionView({
+    collection: new Notes.FlagCollection(attrs)
+  });
+  Notes.renderSidebar();
+}
+
+// TODO: calling this more than once breaks click handlers ???
+Notes.renderSidebar = function() {
+  var $container = $('.flags-container');
+  $container.empty();
+  $container.append(Notes.sidebarView.render().el);
+}
+
 
 
 Notes.renderStats = function(stats) {
@@ -262,25 +275,9 @@ Notes.renderStats = function(stats) {
   if (jQuery.isEmptyObject(flag_counts)) { return; }
 
   // TODO: add in stats container
-  //
   //   <div class="stats-container">
   //     <div class="chart"></div>
   //   </div>
-}
-
-
-// TODO: this only renders the initial state of the sidebar, i.e. defaults
-Notes.renderSidebar = function() {
-  var $sidebar = $('.flags-container'),
-      flag, flagView;
-
-  $sidebar.empty();
-
-  Notes.defaultFlags.forEach(function(flagName) {
-    flag     = new Notes.SidebarFlag({ name: flagName })
-    flagView = new Notes.SidebarFlagView({ model: flag });
-    $sidebar.append(flagView.render().el);
-  });
 }
 
 
@@ -310,43 +307,76 @@ Notes.renderTasks = function(tasks) {
 }
 
 
+
 Notes.addProgress = function() {
-  $('.loading-container').find('p').append('.')
+  $('.loading-container').find('p').append('.');
+}
+
+
+Notes.queryPath = function() {
+  var path = window.location.pathname;
+  return (path === '/' ? '' : path) + "/tasks.json"
 }
 
 
 // Fetch tasks from the server and re-render
-Notes.fetchTasks = function() {
-  progressInterval = setInterval(Notes.addProgress, 175);
+Notes.queryTasks = function(queryFlags) {
+  console.log("queryFlags: ", queryFlags);
+  Notes.buildColorMap(queryFlags); // TODO - don't like how map changes every time
 
-  var path = window.location.pathname;
+  $('.main-content-container').html("<div class='loading-container'><p>Loading </p></div>");
+  var progressInterval = setInterval(Notes.addProgress, 175);
 
-  $.getJSON((path === '/' ? '' : path) + "/tasks.json", { flags: ['FINDME'] }, function(json) {
+  if (!Notes.sidebarView) {
+    Notes.buildSidebar(queryFlags);
+  }
+
+  $.getJSON(Notes.queryPath(), { flags: queryFlags }, function(json) {
     var stats = json.stats,
         tasks = json.tasks.map(function(attrs) { return new Notes.Task(attrs) });
 
-    Notes.allTasks = tasks;
-
-    Notes.distinctFlags = stats.distinct_flags;
-
-    // TODO: concat with distinct, default, or selected?
-    Notes.allFlags = _.uniq(Notes.distinctFlags.concat(Notes.defaultFlags));
-    Notes.colorMap = _.zip(Notes.allFlags, Notes.colors);
-
     clearInterval(progressInterval);
     Notes.renderStats(stats);
-    Notes.renderSidebar();
     Notes.renderTasks(tasks);
   });
 }
 
 
 
-$(function() {
-  Notes.fetchTasks();
+// Page Load
+// ----------------------------------
+Notes.queryTasks(Notes.defaultFlags);
 
-  $(document).on('click', '.filter-btn', function() {
-    Notes.fetchTasks()
+
+$(function() {
+  var $doc = $(document);
+
+  $doc.on('keyup', '.add-flag', function(e) {
+    if (e.keyCode === 13) {
+      var $input = $(this);
+      Notes.addFlag($input.val());
+      $input.val('');
+    }
+  });
+
+
+  $doc.on('click', '.add-flag-btn', function() {
+    var $input = $('.add-flag');
+    Notes.addFlag($input.val());
+    $input.val('');
+    return false;
+  });
+
+
+  $doc.on('click', '.filter-btn', function() {
+    // TODO: check subset query
+    Notes.queryTasks(Notes.getSelectedFlags());
+    return false;
+  });
+
+
+  $doc.on('click', '.restore-defaults-btn', function() {
+    Notes.queryTasks(Notes.defaultFlags);
     return false;
   });
 });

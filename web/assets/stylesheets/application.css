@@ -142,7 +142,17 @@ body {
       margin: 0;
       width: 20%;
     }
-  .filter-btn { font-size: 1.2em; }
+  .filter-btn {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+  }
+  .restore-defaults-btn {
+    color: #ccc;
+    font-size: 0.9em;
+    float: right;
+    text-decoration: none;
+  }
+    .restore-defaults-btn:hover { text-decoration: underline; }
 
 
 .main-content-container { padding: 20px; }
