@@ -27,8 +27,8 @@ describe 'stats' do
       }
     end
 
-    it 'aggregates distinct flags' do
-      Notes::Stats.distinct_flags(tasks).should == ['TODO', 'OPTIMIZE', 'FIXME']
+    it 'aggregates found flags' do
+      Notes::Stats.found_flags(tasks).should == ['TODO', 'OPTIMIZE', 'FIXME']
     end
   end
 end

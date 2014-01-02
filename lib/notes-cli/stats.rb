@@ -7,7 +7,7 @@ module Notes
     def compute(tasks)
       {
         flag_counts: flag_counts(tasks),
-        distinct_flags: distinct_flags(tasks)
+        found_flags: found_flags(tasks)
       }
     end
 
@@ -30,7 +30,7 @@ module Notes
     # tasks: Array[Notes::Task]
     #
     # Returns Array[String] of flag names
-    def distinct_flags(tasks)
+    def found_flags(tasks)
       flags = Set.new
       tasks.each { |task| flags.merge(task.flags) }
       flags.to_a
