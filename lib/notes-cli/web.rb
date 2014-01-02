@@ -24,7 +24,7 @@ module Notes
       # TODO: cache this somehow
       options = Notes::Options.defaults
       if flags = params[:flags]
-        options[:flags].concat(flags)
+        options[:flags] = flags
       end
 
       tasks  = Notes::Tasks.all(options)
