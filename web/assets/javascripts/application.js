@@ -86,7 +86,10 @@ Notes.Task = Backbone.Model.extend({
   },
 
   escapedContextLines: function() {
-    return this.get('context').split("\n")
+    var ctx = this.get('context');
+    if (ctx === '') { return []; }
+
+    return ctx.split("\n")
                .map(function(line) { return Notes.escapeHtml(line); });
   },
 
