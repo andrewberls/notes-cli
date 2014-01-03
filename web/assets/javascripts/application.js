@@ -121,10 +121,10 @@ Notes.Task = Backbone.Model.extend({
 Notes.TaskView = Backbone.View.extend({
   tagName: 'div',
   className: 'task',
-  tmpl: $('#tmpl-task').html(),
+  template: _.template($('#tmpl-task').html()),
 
   render: function() {
-    $(this.el).html(_.template(this.tmpl, { task: this.model }));
+    $(this.el).html(this.template({ task: this.model }));
     return this;
   },
 
@@ -186,10 +186,10 @@ Notes.Flag = Backbone.Model.extend({
 Notes.FlagView = Backbone.View.extend({
   tagName: 'div',
   className: 'flag-container',
-  tmpl: $('#tmpl-flag').html(),
+  template: _.template($('#tmpl-flag').html()),
 
   render: function() {
-    $(this.el).html(_.template(this.tmpl, { flag: this.model }));
+    $(this.el).html(this.template({ flag: this.model }));
     return this;
   },
 
