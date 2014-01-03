@@ -415,4 +415,22 @@ $(function() {
     Notes.queryTasks(Notes.defaultFlags);
     return false;
   });
+
+
+  $doc.on('click', '.toggle-all-context-btn', function() {
+    var $toggle = $('.task-toggle'),
+        $ctx    = $('.task-context');
+
+    if ($ctx.is(':visible')) {
+      $(this).html("Show all context <i class='fa fa-angle-down'></i>");
+      $toggle.removeClass('fa-angle-up').addClass('fa-angle-down');
+      $ctx.slideUp();
+    } else {
+      $(this).html("Hide all context <i class='fa fa-angle-up'></i>");
+      $toggle.removeClass('fa-angle-down').addClass('fa-angle-up');
+      $ctx.slideDown();
+    }
+
+    return false;
+  });
 });
