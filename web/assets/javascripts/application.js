@@ -14,6 +14,12 @@ Notes.escapeHtml = function(text) {
 }
 
 
+// Is Array A a subset of Array B?
+Notes.isSubset = function(a,b) {
+  return a.length === _.intersection(a,b).length;
+}
+
+
 // How many tabs or spaces does a string start with?
 Notes.leadingWhitespaceCount = function(str) {
   var count = 0;
@@ -202,9 +208,7 @@ Notes.FlagView = Backbone.View.extend({
     this.model.set('checked', false);
     this.$checkbox().removeClass('checked');
   },
-  toggleCheck: function() {
-                 console.log("toggling check");
-                 this.isChecked() ? this.uncheck() : this.check(); },
+  toggleCheck: function() { this.isChecked() ? this.uncheck() : this.check(); },
 
   deleteFlag: function() {
     Notes.sidebarView.collection.remove(this.model);
@@ -269,7 +273,6 @@ Notes.renderSidebar = function() {
 }
 
 
-
 Notes.renderStats = function(stats) {
   var flag_counts = stats.flag_counts;
   if (jQuery.isEmptyObject(flag_counts)) { return; }
@@ -281,21 +284,21 @@ Notes.renderStats = function(stats) {
 }
 
 
+// tasks - Array[Notes.Task]
 Notes.renderTasks = function(tasks) {
   var $container = $('.main-content-container'),
       filename, collection, collectionView;
 
   $container.empty();
 
-  // filename -> [Notes.Task]
-  var taskMap = _.groupBy(tasks, function(t) { return t.get('filename'); });
-
-  if ($.isEmptyObject(taskMap)) {
-    // TODO - temporary hack
+  if (tasks.length === 0) {
     $container.html($("<div class='empty-tasks-container'>").append(
       "<h2>No tasks matching the criteria were found!</h2>"));
     return;
   }
+
+  // filename -> Array[Notes.Task]
+  var taskMap = _.groupBy(tasks, function(t) { return t.get('filename'); });
 
   for (filename in taskMap) {
     collection = new Notes.TasksCollection(taskMap[filename]);
@@ -307,12 +310,37 @@ Notes.renderTasks = function(tasks) {
 }
 
 
-
 Notes.addProgress = function() {
   $('.loading-container').find('p').append('.');
 }
 
 
+
+// Check if a set of tasks can be filtered based on flags we've already searched for
+// This allows us to avoid hitting the server when we don't need to
+//
+// flags - Array[String]
+Notes.isSubsetQuery = function(flags) {
+  return Notes.isSubset(flags, Notes.lastQueryFlags);
+}
+
+
+// Find a subset of locally-cached tasks that match a set of search flags
+// Returns Array[Notes.Task]
+//
+// TODO: this behaves weirdly if a task has multiple flags, punting for now
+Notes.filterTasks = function(queryFlags) {
+  if (queryFlags.length === 0) { return []; }
+
+  return Notes.tasks.filter(function(task) {
+    var taskFlags = task.get('flags');
+    return (Notes.isSubset(taskFlags, queryFlags) ||
+            Notes.isSubset(queryFlags, taskFlags));
+  });
+}
+
+
+// Returns the URL to query the server at
 Notes.queryPath = function() {
   var path = window.location.pathname;
   return (path === '/' ? '' : path) + "/tasks.json"
@@ -321,23 +349,32 @@ Notes.queryPath = function() {
 
 // Fetch tasks from the server and re-render
 Notes.queryTasks = function(queryFlags) {
-  console.log("queryFlags: ", queryFlags);
-  Notes.buildColorMap(queryFlags); // TODO - don't like how map changes every time
+  if (!Notes.colorMap) { Notes.buildColorMap(queryFlags); }
 
+  if (Notes.lastQueryFlags && Notes.isSubsetQuery(queryFlags)) {
+    // Subset query - don't need to hit server
+    var tasks = Notes.filterTasks(queryFlags);
+    Notes.renderTasks(tasks);
+    return;
+  }
+
+  // Can't filter client-side - need to hit server
   $('.main-content-container').html("<div class='loading-container'><p>Loading </p></div>");
   var progressInterval = setInterval(Notes.addProgress, 175);
 
-  if (!Notes.sidebarView) {
-    Notes.buildSidebar(queryFlags);
-  }
+  if (!Notes.sidebarView) { Notes.buildSidebar(queryFlags); }
 
   $.getJSON(Notes.queryPath(), { flags: queryFlags }, function(json) {
     var stats = json.stats,
         tasks = json.tasks.map(function(attrs) { return new Notes.Task(attrs) });
 
+    Notes.tasks = tasks;
+    Notes.lastQueryFlags = queryFlags; // Save the most recent search terms for checking subsets
+
     clearInterval(progressInterval);
     Notes.renderStats(stats);
     Notes.renderTasks(tasks);
+
   });
 }
 
@@ -369,7 +406,6 @@ $(function() {
 
 
   $doc.on('click', '.filter-btn', function() {
-    // TODO: check subset query
     Notes.queryTasks(Notes.getSelectedFlags());
     return false;
   });
