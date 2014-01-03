@@ -23,6 +23,7 @@ module Notes
     get '/tasks.json' do
       # TODO: cache this somehow
       options = Notes::Options.defaults
+
       if flags = params[:flags]
         options[:flags] = flags
       end

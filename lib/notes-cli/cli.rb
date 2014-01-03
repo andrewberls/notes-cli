@@ -1,8 +1,8 @@
 module Notes
   class CLI
 
-    def initialize
-      @options = Notes::Options.parse(ARGV)
+    def initialize(argv)
+      @options = Notes::Options.parse(argv)
     end
 
     # Read and parse all files as specified in the options

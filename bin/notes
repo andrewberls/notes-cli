@@ -25,8 +25,18 @@ Examples:
   notes app/ -e logs/   # Show default annotations for files in app/ directory, excluding files in logs/
   notes one.rb two.rb   # Show default annotations for one.rb and two.rb
 
+You can also start a standalone server for the web interface with `notes server`
+The default port is 9292.
+
+Server options:
+  -p, --port  # Set the port to run on, ex: `notes server -p 3000`
+
 }
   exit(0)
 end
 
-Notes::CLI.new.find_all
+if ARGV.first == 'server'
+  Notes::Server.new(ARGV).start
+else
+  Notes::CLI.new(ARGV).find_all
+end
