@@ -3,12 +3,16 @@ module Notes
 
   # The root directory in which we're searching
   def root
-    rails? ? Rails.root : Dir.pwd
+    defined?(Rails) ? Rails.root : Dir.pwd
   end
 
   # Are we being included into a Rails project?
+  #
+  # TODO: this is pretty hacky but we can't rely on the definition
+  # of the Rails constant from the CLI and it works on both 3 & 4
   def rails?
-    !!defined?(Rails)
+    path = root + '/config/application.rb'
+    File.exists?(path) && File.read(path).include?('Rails::Application')
   end
 
   # Are we in a git repo?
@@ -104,3 +108,4 @@ require 'notes-cli/options'
 require 'notes-cli/tasks'
 require 'notes-cli/stats'
 require 'notes-cli/cli'
+require 'notes-cli/server'

@@ -107,8 +107,6 @@ end
 
 describe 'defaults' do
   context 'when Rails is not defined' do
-    specify { defined?(Rails).should be_nil }
-
     it 'does not exclude anything by default' do
       Notes::Options.default_excludes.should == []
     end
@@ -119,18 +117,9 @@ describe 'defaults' do
   end
 
   context 'when Rails is defined' do
-    before { Object.const_set('Rails', Module.new) }
-    after  { Object.send(:remove_const, :Rails) }
-
-    specify { defined?(Rails).should_not be_nil }
-
     it 'excludes slow directories by default' do
+      Notes.should_receive(:rails?).and_return(true)
       Notes::Options.default_excludes.should == %w(tmp log)
-    end
-
-    it 'uses the Rails root by default' do
-      Rails.should_receive(:root).and_return 'root'
-      Notes.root.should == 'root'
     end
   end
 end
