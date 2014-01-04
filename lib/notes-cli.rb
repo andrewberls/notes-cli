@@ -11,8 +11,9 @@ module Notes
   # TODO: this is pretty hacky but we can't rely on the definition
   # of the Rails constant from the CLI and it works on both 3 & 4
   def rails?
-    path = root + '/config/application.rb'
-    File.exists?(path) && File.read(path).include?('Rails::Application')
+    path = root.to_s + '/config/application.rb'
+    return false unless File.exists?(path)
+    File.read(path).include?('Rails::Application')
   end
 
   # Are we in a git repo?

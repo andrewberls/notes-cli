@@ -277,8 +277,7 @@ Notes.renderSidebar = function() {
 
 
 Notes.renderStats = function(stats) {
-  var flag_counts = stats.flag_counts;
-  if (jQuery.isEmptyObject(flag_counts)) { return; }
+  var flagCounts = stats.flag_counts;
 
   // TODO: add in stats container
   //   <div class="stats-container">
