@@ -13,7 +13,7 @@ module Notes
 
       task_map.each do |filename, tasks|
         puts "#{filename}:"
-        tasks.each { |task| puts task.to_s }
+        tasks.each { |task| puts '  ' + task.to_s }
         puts ''
       end
     end

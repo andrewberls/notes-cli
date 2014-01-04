@@ -26,7 +26,7 @@ module Notes
         Notes.colorize('yellow', flag)
       end
 
-      "  ln #{@line_num}: #{line.strip}"
+      "ln #{@line_num}: #{line.strip}"
     end
 
     def to_json
