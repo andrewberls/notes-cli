@@ -17,7 +17,7 @@ module Notes
 
     def default_excludes
       if Notes.rails?
-        %w(tmp log)
+        %w(tmp log vendor)
       else
         []
       end
